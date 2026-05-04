@@ -15,7 +15,7 @@ public class DummyTarget : MonoBehaviour, IDamageable
     {
         currentHp = maxHp;
         // Keep this logging local to the dev component so production damage code stays quiet.
-        OnDamaged += amount => Debug.Log($"[DummyTarget] {name} took {amount} damage. HP: {currentHp}/{maxHp}");
+        OnDamaged += amount => GameLog.Debug(this, $"{name} took {amount} damage. HP: {currentHp}/{maxHp}");
     }
 
     public void TakeDamage(int amount)

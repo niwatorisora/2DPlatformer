@@ -22,6 +22,8 @@
   - ダメージ対象、陣営、戦闘共通処理を扱います。
 - `Assets/Scripts/Combat/Shooting`
   - 弾、弾プール、弾データ、武器データを扱います。
+- `Assets/Scripts/Diagnostics`
+  - Unity Console 向けの共通ログ出力を扱います。
 - `Assets/Scripts/Dev`
   - 動作確認用の簡易ターゲットを置いています。
 - `Assets/Bullet`
@@ -65,6 +67,12 @@
 - `hitMask` 外のレイヤー: 完全に無視
 
 地形は `TeamAffiliation` も `IDamageable` も付けず、`hitMask` に含めることで「弾を止めるだけの対象」として扱えます。
+
+## ログ出力
+
+ゲームプレイやデバッグ用のログは `GameLog` 経由で出力します。Unity Console では `[Debug:ClassName] message` のように、ログ種別と出力元クラス名の接頭辞が付きます。
+
+`GameLog.Debug(this, "message")` のように Unity の `Object` を渡すと、Console から該当コンポーネントやアセットを辿れます。
 
 ## 陣営
 

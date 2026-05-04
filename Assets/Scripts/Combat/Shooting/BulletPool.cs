@@ -34,7 +34,7 @@ public class BulletPool : MonoBehaviour, IBulletPool
     {
         if (bulletPrefab == null)
         {
-            Debug.LogError($"{nameof(BulletPool)} requires a bullet prefab.", this);
+            GameLog.Error(this, "requires a bullet prefab.");
             return;
         }
 

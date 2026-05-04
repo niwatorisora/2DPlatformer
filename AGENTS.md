@@ -34,6 +34,8 @@ Detailed project notes:
   - `WeaponData`: firing behavior such as cooldown, simultaneous shot count, spread, sequence count, and interval.
   - `BulletPool`: pooled bullet spawning.
   - `Bullet`: runtime bullet movement, lifetime, collision, team checks, and damage application.
+- `Assets/Scripts/Diagnostics`
+  - `GameLog`: standardized Unity Console logging with `[Level:ClassName]` prefixes.
 - `Assets/Scripts/Dev`
   - Prototype-only helpers such as `DummyTarget`.
 
@@ -67,6 +69,7 @@ Useful validation:
 - Objects in `hitMask` without `IDamageable` stop bullets without taking damage. Use this for terrain and non-damageable blockers.
 - Same-team targets and the owner are ignored by bullets; bullets should pass through them.
 - `Player` and `Ally` are friendly to each other. `Enemy` is friendly to `Enemy`. `Neutral` is not friendly to anyone.
+- Use `GameLog` for gameplay/debug logging so console prefixes stay consistent.
 - Keep `Assets/**/*.meta` files tracked with their assets. Never delete or regenerate `.meta` files casually.
 - Avoid editing generated Unity folders (`Library/`, `Temp/`, `Logs/`, `UserSettings/`) unless explicitly troubleshooting local Editor state.
 - Preserve user-made scene or asset changes. Unity YAML edits should be minimal and based on current file contents.

@@ -34,25 +34,25 @@ public class PlayerShooter : MonoBehaviour
 
         if (bulletPool == null)
         {
-            Debug.LogError($"{nameof(PlayerShooter)} requires a bullet pool.", this);
+            GameLog.Error(this, "requires a bullet pool.");
             return;
         }
 
         if (targetCamera == null)
         {
-            Debug.LogError($"{nameof(PlayerShooter)} requires a camera.", this);
+            GameLog.Error(this, "requires a camera.");
             return;
         }
 
         if (weaponData == null)
         {
-            Debug.LogError($"{nameof(PlayerShooter)} requires weapon data.", this);
+            GameLog.Error(this, "requires weapon data.");
             return;
         }
 
         if (weaponData.bulletData == null)
         {
-            Debug.LogError($"{nameof(WeaponData)} requires bullet data.", weaponData);
+            GameLog.Error(weaponData, "requires bullet data.");
             return;
         }
 
