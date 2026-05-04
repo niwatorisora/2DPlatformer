@@ -70,11 +70,19 @@ public class Bullet : MonoBehaviour
         // LayerMask is the broad collision filter; team and owner checks are runtime filters.
         if ((hitMask & (1 << other.gameObject.layer)) == 0) return;
         if (IsOwnerCollider(other)) return;
+
+        var damageContext = new DamageContext(damage, owner, ownerTeam, other);
+        if (other.GetComponentInParent<IDamageable>() is { } target)
+        {
+            if (!target.CanReceiveDamage(damageContext)) return;
+            target.TakeDamage(damageContext);
+            Release();
+            return;
+        }
+
         if (IsFriendlyCollider(other)) return;
 
         // Non-damageable objects in the hitMask still stop the bullet, such as terrain.
-        if (other.GetComponentInParent<IDamageable>() is { } target)
-            target.TakeDamage(damage);
         Release();
     }
 

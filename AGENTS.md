@@ -27,7 +27,8 @@ Detailed project notes:
   - `PlayerMovement`: horizontal movement and jump.
   - `PlayerShooter`: mouse aiming, trigger cooldown, spread, burst/sequence firing.
 - `Assets/Scripts/Combat`
-  - `IDamageable`: damage receiver contract.
+  - `IDamageable`: damage receiver contract using `DamageContext`.
+  - `Health`: shared HP, damage intake checks, and death/damaged events.
   - `TeamAffiliation`: combat side used for friendly-fire filtering.
 - `Assets/Scripts/Combat/Shooting`
   - `BulletData`: bullet behavior data such as speed, lifetime, damage, gravity, and hit mask.
@@ -44,7 +45,7 @@ Core data flow:
 2. `WeaponData` points to `BulletData`.
 3. `BulletConfig` snapshots `BulletData` at fire time.
 4. `BulletPool` launches pooled `Bullet` instances.
-5. `Bullet` uses `hitMask`, owner, and `TeamAffiliation` to decide whether to damage, stop, or ignore a collision.
+5. `Bullet` uses `hitMask` and owner checks, then asks `IDamageable`/`Health` whether damage can be received.
 
 ## Development Setup
 
@@ -69,6 +70,7 @@ Useful validation:
 - Objects in `hitMask` without `IDamageable` stop bullets without taking damage. Use this for terrain and non-damageable blockers.
 - Same-team targets and the owner are ignored by bullets; bullets should pass through them.
 - `Player` and `Ally` are friendly to each other. `Enemy` is friendly to `Enemy`. `Neutral` is not friendly to anyone.
+- Use `Health` for actors or mobs that have HP. Death behavior belongs in listeners on `Health.OnDied`, not in `Health` itself.
 - Use `GameLog` for gameplay/debug logging so console prefixes stay consistent.
 - Keep `Assets/**/*.meta` files tracked with their assets. Never delete or regenerate `.meta` files casually.
 - Avoid editing generated Unity folders (`Library/`, `Temp/`, `Logs/`, `UserSettings/`) unless explicitly troubleshooting local Editor state.

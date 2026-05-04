@@ -6,5 +6,6 @@ using System;
 public interface IDamageable
 {
     event Action<int> OnDamaged;
-    void TakeDamage(int amount);
+    bool CanReceiveDamage(DamageContext context);
+    void TakeDamage(DamageContext context);
 }

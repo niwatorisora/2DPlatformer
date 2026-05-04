@@ -1,29 +1,26 @@
-using System;
 using UnityEngine;
 
 /// <summary>
-/// Simple damage receiver for validating bullet hits in prototype scenes.
+/// Prototype-only damage log for validating bullet hits in scenes.
 /// </summary>
-public class DummyTarget : MonoBehaviour, IDamageable
+[RequireComponent(typeof(Health))]
+public class DummyTarget : MonoBehaviour
 {
-    [SerializeField] int maxHp = 100;
-    int currentHp;
-
-    public event Action<int> OnDamaged;
+    Health health;
 
     void Awake()
     {
-        currentHp = maxHp;
+        health = GetComponent<Health>();
         // Keep this logging local to the dev component so production damage code stays quiet.
-        OnDamaged += amount => GameLog.Debug(this, $"{name} took {amount} damage. HP: {currentHp}/{maxHp}");
+        health.OnDamaged += LogDamage;
     }
 
-    public void TakeDamage(int amount)
+    void OnDestroy()
     {
-        if (amount <= 0) return;
-        currentHp -= amount;
-        OnDamaged?.Invoke(amount);
+        if (health != null)
+            health.OnDamaged -= LogDamage;
     }
 
-    void OnValidate() => maxHp = Mathf.Max(1, maxHp);
+    void LogDamage(int amount)
+        => GameLog.Debug(this, $"{name} took {amount} damage. HP: {health.CurrentHp}/{health.MaxHp}");
 }
