@@ -58,6 +58,8 @@
 
 HP は `Health` コンポーネントで管理します。`Health` は `IDamageable` を実装し、現在HP、最大HP、無敵状態、被ダメージ可否、被ダメージイベント、死亡イベントを扱います。
 
+被ダメージ時のコンソールログは、`CombatDamageLog` コンポーネントを `Health` と同じGameObjectに付けると `GameLog` 経由で出力されます（プレイヤー・敵プレハブで使用）。
+
 `TeamAffiliation` は陣営だけを担当します。`Health` には `RequireComponent(typeof(TeamAffiliation))` が付いているため、HPを持つキャラクターに `Health` を追加すると陣営コンポーネントも必要になります。
 
 死亡時の標準動作は `OnDied` イベントの発火だけです。Destroy、非表示、リスポーン、スコア加算などは、プレイヤー、敵、破壊物ごとの別コンポーネントが購読して実装します。

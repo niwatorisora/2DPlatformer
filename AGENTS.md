@@ -29,6 +29,7 @@ Detailed project notes:
 - `Assets/Scripts/Combat`
   - `IDamageable`: damage receiver contract using `DamageContext`.
   - `Health`: shared HP, damage intake checks, and death/damaged events.
+  - `CombatDamageLog`: optional `Health.OnDamaged` logger for player/enemy (console via `GameLog`).
   - `TeamAffiliation`: combat side used for friendly-fire filtering.
 - `Assets/Scripts/Combat/Shooting`
   - `BulletData`: bullet behavior data such as speed, lifetime, damage, gravity, and hit mask.

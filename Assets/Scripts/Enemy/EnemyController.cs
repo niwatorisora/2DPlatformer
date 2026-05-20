@@ -1,0 +1,91 @@
+using UnityEngine;
+
+/// <summary>
+/// Central hub for a single enemy. Owns the state machine and exposes the
+/// Movement / Attack / Sensor / Data / Target properties that states read.
+/// Wiring is done through Initialize so the same Prefab works both with
+/// EnemyFactory (runtime spawn) and manual scene placement.
+/// </summary>
+[RequireComponent(typeof(Health))]
+[RequireComponent(typeof(TeamAffiliation))]
+public class EnemyController : MonoBehaviour
+{
+    // --- Component references resolved in Awake ---
+    public EnemyMovement Movement  { get; private set; }
+    public EnemyAttack   Attack    { get; private set; }
+    public EnemySensor   Sensor    { get; private set; }
+    public Health        Health    { get; private set; }
+
+    // --- Runtime data set by Initialize ---
+    public EnemyData     Data      { get; private set; }
+    public Transform     Target    { get; private set; }
+
+    // --- State instances (created in Initialize) ---
+    public EnemyIdleState   IdleState   { get; private set; }
+    public EnemyPatrolState PatrolState { get; private set; }
+    public EnemyChaseState  ChaseState  { get; private set; }
+    public EnemyAttackState AttackState { get; private set; }
+    public EnemyDeadState   DeadState   { get; private set; }
+
+    EnemyStateMachine stateMachine;
+    bool initialized;
+
+    void Awake()
+    {
+        Movement = GetComponent<EnemyMovement>();
+        Attack   = GetComponent<EnemyAttack>();
+        Sensor   = GetComponent<EnemySensor>();
+        Health   = GetComponent<Health>();
+    }
+
+    /// <summary>
+    /// Called by EnemyFactory (or a scene-placement helper) to inject runtime deps.
+    /// Safe to call multiple times; subsequent calls re-initialize with new data.
+    /// </summary>
+    public void Initialize(EnemyData data, Transform target, IBulletPool bulletPool)
+    {
+        Data   = data;
+        Target = target;
+
+        Health.Initialize(data.maxHp);
+
+        var team = GetComponent<TeamAffiliation>();
+        TeamId teamId = team != null ? team.TeamId : TeamId.Neutral;
+
+        Movement.Configure(data.moveSpeed);
+        Attack.Configure(data, bulletPool, teamId);
+        Sensor.Configure(target, data.detectionRange, data.loseSightRange);
+
+        BuildStateMachine();
+        initialized = true;
+    }
+
+    void BuildStateMachine()
+    {
+        IdleState   = new EnemyIdleState(this);
+        PatrolState = new EnemyPatrolState(this);
+        ChaseState  = new EnemyChaseState(this);
+        AttackState = new EnemyAttackState(this);
+        DeadState   = new EnemyDeadState(this);
+
+        stateMachine = new EnemyStateMachine();
+        stateMachine.ChangeState(IdleState);
+    }
+
+    public void ChangeState(EnemyState next)
+    {
+        stateMachine?.ChangeState(next);
+    }
+
+    /// <summary>Called by EnemyDeathHandler when Health.OnDied fires.</summary>
+    public void OnDied()
+    {
+        ChangeState(DeadState);
+    }
+
+    void Update()
+    {
+        if (!initialized) return;
+        stateMachine.Tick(Time.deltaTime);
+    }
+}

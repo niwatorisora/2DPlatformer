@@ -32,6 +32,17 @@ public class Health : MonoBehaviour, IDamageable
         currentHp = maxHp;
     }
 
+    /// <summary>
+    /// Sets max HP and resets current HP to the new value.
+    /// Call this from EnemyFactory or other spawners that drive HP from EnemyData.
+    /// Manual scene-placed actors can rely on the Inspector value and skip this call.
+    /// </summary>
+    public void Initialize(int newMaxHp)
+    {
+        maxHp = Mathf.Max(1, newMaxHp);
+        currentHp = maxHp;
+    }
+
     public bool CanReceiveDamage(DamageContext context)
     {
         if (!IsAlive) return false;

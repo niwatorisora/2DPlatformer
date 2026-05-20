@@ -917,6 +917,7 @@ GameObject:
   - component: {fileID: 1158802518}
   - component: {fileID: 1158802519}
   - component: {fileID: 1158802520}
+  - component: {fileID: 1158802521}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -1135,6 +1136,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHp: 100
   isInvulnerable: 0
+--- !u!114 &1158802521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1158802512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4e8f91a2b3d4e5f8a9b0c1d2e3f4a5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatDamageLog
 --- !u!1 &1732235465
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -41,6 +42,33 @@ public class Bullet : MonoBehaviour
         this.ownerTeam    = ownerTeam;
         rb.gravityScale   = config.useGravity ? config.gravityScale : 0f;
         rb.linearVelocity = direction.normalized * config.speed;
+
+        // If the bullet spawns already overlapping a target, OnTriggerEnter2D may never fire.
+        // Resolve overlaps once on launch so close-range shots still apply damage.
+        ResolveOverlapsAfterLaunch();
+    }
+
+    void ResolveOverlapsAfterLaunch()
+    {
+        if (isReleased) return;
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col == null) return;
+
+        var filter = new ContactFilter2D
+        {
+            useTriggers = true,
+            useLayerMask = true,
+            layerMask = (LayerMask)hitMask
+        };
+
+        var overlaps = new List<Collider2D>(8);
+        int count = col.Overlap(filter, overlaps);
+        for (int i = 0; i < count; i++)
+        {
+            ProcessHit(overlaps[i]);
+            if (isReleased) break;
+        }
     }
 
     /// <summary>
@@ -65,8 +93,12 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other) => ProcessHit(other);
+
+    void ProcessHit(Collider2D other)
     {
+        if (isReleased) return;
+
         // LayerMask is the broad collision filter; team and owner checks are runtime filters.
         if ((hitMask & (1 << other.gameObject.layer)) == 0) return;
         if (IsOwnerCollider(other)) return;

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: ShotgunBullet
   m_EditorClassIdentifier: Assembly-CSharp::BulletData
   speed: 10
-  lifeTime: 2
-  damage: 10
+  lifeTime: 10
   useGravity: 0
   gravityScale: 1
+  damage: 10
   hitMask:
     serializedVersion: 2
     m_Bits: 456
