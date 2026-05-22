@@ -4,13 +4,18 @@ This file is the shared instruction source for coding AI agents working on this 
 
 ## Project Overview
 
-This is a Unity 6000.4.5f1 2D platformer prototype. The current gameplay focus is player movement, mouse-aimed shooting, pooled bullets, ScriptableObject-driven bullet/weapon data, and team-based friendly-fire filtering.
+This is a Unity 6000.4.5f1 2D platformer prototype. The current gameplay focus is player movement, mouse-aimed shooting, pooled bullets, ScriptableObject-driven bullet/weapon data, team-based friendly-fire filtering, and a State/Factory-based enemy AI system.
 
 Primary scene:
 - `Assets/Scenes/SampleScene.unity`
 
-Detailed project notes:
-- `docs/project-overview.md`
+Documentation index and detailed notes:
+- `docs/project-overview.md` — index and quick summary
+- `docs/architecture-overview.md` — directory layout, data flow, type-to-file map
+- `docs/shooting.md` — BulletData / WeaponData / ShooterCore / BulletPool / Bullet
+- `docs/combat.md` — Health / IDamageable / TeamAffiliation / hit rules
+- `docs/enemy-ai.md` — EnemyData / EnemyController / states / movement / attack
+- `docs/data-assets.md` — existing assets, naming conventions, how to add new ones
 
 ## Tech Stack
 
@@ -25,28 +30,46 @@ Detailed project notes:
 
 - `Assets/Scripts/Player`
   - `PlayerMovement`: horizontal movement and jump.
-  - `PlayerShooter`: mouse aiming, trigger cooldown, spread, burst/sequence firing.
+  - `PlayerShooter`: mouse aiming, cooldown, spread, burst/sequence firing via `ShooterCore`.
 - `Assets/Scripts/Combat`
-  - `IDamageable`: damage receiver contract using `DamageContext`.
-  - `Health`: shared HP, damage intake checks, and death/damaged events.
-  - `CombatDamageLog`: optional `Health.OnDamaged` logger for player/enemy (console via `GameLog`).
-  - `TeamAffiliation`: combat side used for friendly-fire filtering.
+  - `Health.cs` contains `DamageContext` (struct), `IDamageable` (interface), and `Health` (MonoBehaviour).
+  - `CombatDamageLog`: optional `Health.OnDamaged` logger (console via `GameLog`).
+  - `TeamAffiliation.cs` contains `TeamId` (enum: `Neutral`, `Ally`, `Enemy`) and `TeamAffiliation` (MonoBehaviour).
 - `Assets/Scripts/Combat/Shooting`
-  - `BulletData`: bullet behavior data such as speed, lifetime, damage, gravity, and hit mask.
-  - `WeaponData`: firing behavior such as cooldown, simultaneous shot count, spread, sequence count, and interval.
-  - `BulletPool`: pooled bullet spawning.
-  - `Bullet`: runtime bullet movement, lifetime, collision, team checks, and damage application.
+  - `BulletData.cs` contains `BulletData` (SO) and `BulletConfig` (readonly struct snapshot).
+  - `WeaponData`: firing behavior — cooldown, simultaneous shot count, spread, sequence count, interval.
+  - `BulletPool.cs` contains `IBulletPool` (interface) and `BulletPool` (MonoBehaviour, `ObjectPool<Bullet>`).
+  - `Bullet`: runtime movement, lifetime, collision, team checks, and damage application.
+  - `ShooterCore`: internal static class — shared spread and sequence coroutine logic used by both `PlayerShooter` and `EnemyShooterAttack`.
+- `Assets/Scripts/Enemy`
+  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame.
+  - `EnemySensor`: detection range checks (`TryDetectTarget`, `IsInAttackRange`, `HasLostSight`).
+  - `EnemyDeathHandler`: bridges `Health.OnDied` → `EnemyController.OnDied()`.
+  - `EnemyFactory`: `Create(EnemyData, Vector2)` — Instantiate + Initialize.
+  - `EnemyData` (SO): per-type parameters (HP, speed, ranges, `WeaponData`, patrol settings).
+- `Assets/Scripts/Enemy/Movement`
+  - `EnemyMovement` (abstract): `Configure / MoveToward / Stop`.
+  - `EnemyGroundMovement`: ground horizontal movement via `Rigidbody2D.linearVelocity.x`.
+  - `EnemyJumpingGroundMovement`: extends `EnemyGroundMovement` with auto-jump when target is above.
+  - `EnemyFlyingMovement`: full 2D movement, `gravityScale=0`, Lerp steering.
+- `Assets/Scripts/Enemy/Attack`
+  - `EnemyAttack` (abstract): `Configure / CanAttack / TryAttack`.
+  - `EnemyShooterAttack`: shoots toward target using `ShooterCore` and `WeaponData`.
+- `Assets/Scripts/Enemy/States`
+  - `EnemyStateMachine.cs` contains `EnemyState` (abstract) and `EnemyStateMachine`.
+  - State implementations: `EnemyIdleState`, `EnemyPatrolState`, `EnemyChaseState`, `EnemyAttackState`, `EnemyDeadState`.
 - `Assets/Scripts/Diagnostics`
   - `GameLog`: standardized Unity Console logging with `[Level:ClassName]` prefixes.
 - `Assets/Scripts/Dev`
   - Prototype-only helpers such as `DummyTarget`.
 
 Core data flow:
-1. A shooter reads `WeaponData`.
+1. A shooter (`PlayerShooter` / `EnemyShooterAttack`) reads `WeaponData`.
 2. `WeaponData` points to `BulletData`.
-3. `BulletConfig` snapshots `BulletData` at fire time.
-4. `BulletPool` launches pooled `Bullet` instances.
-5. `Bullet` uses `hitMask` and owner checks, then asks `IDamageable`/`Health` whether damage can be received.
+3. `BulletConfig` snapshots `BulletData` values at fire time.
+4. `ShooterCore` computes spread/sequence and calls `IBulletPool.Shoot`.
+5. `BulletPool` launches pooled `Bullet` instances.
+6. `Bullet` uses `hitMask` and owner/team checks, then calls `IDamageable.TakeDamage` on `Health`.
 
 ## Development Setup
 
@@ -70,7 +93,8 @@ Useful validation:
 - Layers and `BulletData.hitMask` are broad collision filters. They decide what a bullet can collide with, not which side owns an object.
 - Objects in `hitMask` without `IDamageable` stop bullets without taking damage. Use this for terrain and non-damageable blockers.
 - Same-team targets and the owner are ignored by bullets; bullets should pass through them.
-- `Player` and `Ally` are friendly to each other. `Enemy` is friendly to `Enemy`. `Neutral` is not friendly to anyone.
+- `TeamId` values are `Neutral`, `Ally`, and `Enemy`. There is no `Player` value — the player uses `Ally`.
+- `AreFriendly(a, b)` returns true only when `a == b` and neither is `Neutral`. `Ally` and `Enemy` are not friendly to each other.
 - Use `Health` for actors or mobs that have HP. Death behavior belongs in listeners on `Health.OnDied`, not in `Health` itself.
 - Use `GameLog` for gameplay/debug logging so console prefixes stay consistent.
 - Keep `Assets/**/*.meta` files tracked with their assets. Never delete or regenerate `.meta` files casually.
