@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f698d029ade8fb8639cf0ce2b8ff6639, type: 3}
+  m_Name: JumpingEnemyData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  prefab: {fileID: 7492890432487074393, guid: b2c6ec9c67bd0447793ca6be603c5b71, type: 3}
+  maxHp: 100
+  moveSpeed: 3
+  detectionRange: 6
+  loseSightRange: 8
+  attackRange: 4
+  weaponData: {fileID: 11400000, guid: 21ece94e2437d9d998d59a77f28df279, type: 2}
+  patrolEnabled: 0
+  patrolDistance: 3

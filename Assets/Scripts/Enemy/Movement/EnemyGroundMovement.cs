@@ -11,7 +11,7 @@ public class EnemyGroundMovement : EnemyMovement
     float moveSpeed;
     float targetVelocityX;
 
-    void Awake()
+    protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
