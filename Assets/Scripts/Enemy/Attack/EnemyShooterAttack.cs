@@ -1,10 +1,8 @@
-using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Ranged attack that reuses WeaponData and IBulletPool.
-/// Mirrors PlayerShooter's spread and burst logic so shotgun/burst WeaponData
-/// work the same way for enemies as they do for the player.
+/// Ranged attack that delegates burst/spread logic to ShooterCore so WeaponData
+/// behaves the same way for enemies as it does for the player.
 /// </summary>
 public class EnemyShooterAttack : EnemyAttack
 {
@@ -46,57 +44,23 @@ public class EnemyShooterAttack : EnemyAttack
         Vector2 direction = ((Vector2)target.position - (Vector2)shootOrigin.position).normalized;
         if (direction.sqrMagnitude <= Mathf.Epsilon) return;
 
-        var config = BulletConfig.From(weaponData.bulletData);
+        var config   = BulletConfig.From(weaponData.bulletData);
         nextFireTime = Time.time + weaponData.cooldown;
+
+        // Enemy recalculates spawn position per shot direction so spread fans outward from origin.
+        Vector2 SpawnPos(Vector2 d) => (Vector2)shootOrigin.position + d * spawnDistanceFromOrigin;
+
+        void Salvo() => ShooterCore.FireSpread(
+            direction, config, weaponData, bulletPool, gameObject, ownerTeam, SpawnPos);
 
         if (weaponData.sequenceShotCount <= 1 || weaponData.sequenceInterval <= 0f)
         {
-            for (int i = 0; i < Mathf.Max(1, weaponData.sequenceShotCount); i++)
-                FireSimultaneousShots(direction, config);
+            for (int i = 0; i < Mathf.Max(1, weaponData.sequenceShotCount); i++) Salvo();
             return;
         }
 
-        fireSequence = StartCoroutine(FireSequence(direction, config));
-    }
-
-    IEnumerator FireSequence(Vector2 direction, BulletConfig config)
-    {
-        int shotCount = Mathf.Max(1, weaponData.sequenceShotCount);
-        float interval = Mathf.Max(0f, weaponData.sequenceInterval);
-
-        for (int i = 0; i < shotCount; i++)
-        {
-            FireSimultaneousShots(direction, config);
-            if (i < shotCount - 1)
-                yield return new WaitForSeconds(interval);
-        }
-
-        fireSequence = null;
-    }
-
-    void FireSimultaneousShots(Vector2 direction, BulletConfig config)
-    {
-        int shotCount    = Mathf.Max(1, weaponData.simultaneousShotCount);
-        float spreadAngle = Mathf.Max(0f, weaponData.spreadAngle);
-
-        if (shotCount == 1 || spreadAngle <= 0f)
-        {
-            Vector2 spawnPos = (Vector2)shootOrigin.position + direction * spawnDistanceFromOrigin;
-            bulletPool.Shoot(spawnPos, direction, config, gameObject, ownerTeam);
-            return;
-        }
-
-        float angleStep  = spreadAngle / (shotCount - 1);
-        float startAngle = -spreadAngle * 0.5f;
-
-        // Spread is centered around the direction to the target, matching PlayerShooter behaviour.
-        for (int i = 0; i < shotCount; i++)
-        {
-            float angle      = startAngle + angleStep * i;
-            Vector2 shotDir  = Quaternion.Euler(0f, 0f, angle) * direction;
-            Vector2 spawnPos = (Vector2)shootOrigin.position + shotDir * spawnDistanceFromOrigin;
-            bulletPool.Shoot(spawnPos, shotDir, config, gameObject, ownerTeam);
-        }
+        fireSequence = StartCoroutine(
+            ShooterCore.FireSequenceRoutine(weaponData, Salvo, () => fireSequence = null));
     }
 
     void OnDisable()

@@ -2,6 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
+/// <summary>
+/// Minimal shooting surface used by shooters without exposing ObjectPool details.
+/// </summary>
+public interface IBulletPool
+{
+    void Shoot(Vector2 position, Vector2 direction, BulletConfig config, GameObject owner, TeamId ownerTeam);
+}
+
 public class BulletPool : MonoBehaviour, IBulletPool
 {
     [SerializeField] Bullet bulletPrefab;

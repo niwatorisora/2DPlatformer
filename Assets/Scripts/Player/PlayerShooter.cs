@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -79,57 +78,23 @@ public class PlayerShooter : MonoBehaviour
         if (direction.sqrMagnitude <= Mathf.Epsilon) return;
         if (fireSequence != null) return;
 
-        var config = BulletConfig.From(weaponData.bulletData);
-        Vector2 normalizedDirection = direction.normalized;
+        var config    = BulletConfig.From(weaponData.bulletData);
+        direction     = direction.normalized;
+        nextFireTime  = Time.time + weaponData.cooldown;
 
-        // Cooldown gates trigger pulls; an active sequence also blocks overlapping bursts.
-        nextFireTime = Time.time + weaponData.cooldown;
+        // All spread shots fire from the same pre-calculated spawn point.
+        void Salvo() => ShooterCore.FireSpread(
+            direction, config, weaponData, bulletPool, gameObject, GetTeamId(),
+            _ => shootPosition);
+
         if (weaponData.sequenceShotCount <= 1 || weaponData.sequenceInterval <= 0f)
         {
-            for (int i = 0; i < weaponData.sequenceShotCount; i++)
-                FireSimultaneousShots(shootPosition, normalizedDirection, config);
+            for (int i = 0; i < Mathf.Max(1, weaponData.sequenceShotCount); i++) Salvo();
             return;
         }
 
-        fireSequence = StartCoroutine(FireSequence(shootPosition, normalizedDirection, config));
-    }
-
-    IEnumerator FireSequence(Vector2 shootPosition, Vector2 direction, BulletConfig config)
-    {
-        int shotCount = Mathf.Max(1, weaponData.sequenceShotCount);
-        float interval = Mathf.Max(0f, weaponData.sequenceInterval);
-
-        for (int i = 0; i < shotCount; i++)
-        {
-            FireSimultaneousShots(shootPosition, direction, config);
-            if (i < shotCount - 1)
-                yield return new WaitForSeconds(interval);
-        }
-
-        fireSequence = null;
-    }
-
-    void FireSimultaneousShots(Vector2 shootPosition, Vector2 direction, BulletConfig config)
-    {
-        int shotCount = Mathf.Max(1, weaponData.simultaneousShotCount);
-        float spreadAngle = Mathf.Max(0f, weaponData.spreadAngle);
-
-        if (shotCount == 1 || spreadAngle <= 0f)
-        {
-            bulletPool.Shoot(shootPosition, direction, config, gameObject, GetTeamId());
-            return;
-        }
-
-        float angleStep = spreadAngle / (shotCount - 1);
-        float startAngle = -spreadAngle * 0.5f;
-
-        // Spread is centered around the requested direction.
-        for (int i = 0; i < shotCount; i++)
-        {
-            float angle = startAngle + angleStep * i;
-            Vector2 shotDirection = Quaternion.Euler(0f, 0f, angle) * direction;
-            bulletPool.Shoot(shootPosition, shotDirection, config, gameObject, GetTeamId());
-        }
+        fireSequence = StartCoroutine(
+            ShooterCore.FireSequenceRoutine(weaponData, Salvo, () => fireSequence = null));
     }
 
     TeamId GetTeamId()
@@ -143,7 +108,6 @@ public class PlayerShooter : MonoBehaviour
     void OnDisable()
     {
         if (fireSequence == null) return;
-
         StopCoroutine(fireSequence);
         fireSequence = null;
     }

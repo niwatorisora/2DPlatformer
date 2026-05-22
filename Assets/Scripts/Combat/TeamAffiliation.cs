@@ -6,7 +6,6 @@ using UnityEngine;
 public enum TeamId
 {
     Neutral,
-    Player,
     Ally,
     Enemy
 }
@@ -23,11 +22,6 @@ public class TeamAffiliation : MonoBehaviour
     public static bool AreFriendly(TeamId a, TeamId b)
     {
         if (a == TeamId.Neutral || b == TeamId.Neutral) return false;
-        if (a == b) return true;
-
-        return IsPlayerSide(a) && IsPlayerSide(b);
+        return a == b;
     }
-
-    static bool IsPlayerSide(TeamId team)
-        => team == TeamId.Player || team == TeamId.Ally;
 }
