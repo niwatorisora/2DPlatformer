@@ -23,7 +23,6 @@ public class EnemyData : ScriptableObject
 
     [Header("Attack")]
     public float attackRange = 4f;
-    public WeaponData weaponData;
 
     [Header("Patrol")]
     public bool patrolEnabled = false;

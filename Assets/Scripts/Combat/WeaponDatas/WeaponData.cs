@@ -6,6 +6,9 @@ public class WeaponData : ScriptableObject
     [Header("Bullet")]
     public BulletData bulletData;
 
+    [Header("Fire Mode")]
+    public bool autoFire = false;
+
     [Header("Fire")]
     public float cooldown = 0.2f;
     // Simultaneous shots and sequence shots cover single, shotgun, and burst patterns.

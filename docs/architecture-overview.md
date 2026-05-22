@@ -18,19 +18,20 @@ Assets/
     ├── Combat/
     │   ├── Health.cs          # IDamageable, DamageContext, Health を同居
     │   ├── TeamAffiliation.cs # TeamId enum + 味方判定
-    │   └── CombatDamageLog.cs # 被ダメ・死亡をコンソール出力
-    ├── Combat/Shooting/
-    │   ├── BulletData.cs      # BulletData SO + BulletConfig struct
-    │   ├── WeaponData.cs      # WeaponData SO（発射パラメータ）
-    │   ├── BulletPool.cs      # IBulletPool interface + BulletPool
-    │   ├── Bullet.cs          # 弾の移動・衝突・ダメージ・プール返却
-    │   └── ShooterCore.cs     # spread/sequence の共有発射ロジック（internal static）
+    │   ├── BulletDatas/
+    │   │   └── BulletData.cs  # BulletData SO + BulletConfig struct
+    │   ├── WeaponDatas/
+    │   │   └── WeaponData.cs  # WeaponData SO（発射パラメータ）
+    │   └── Shooting/
+    │       ├── BulletPool.cs  # IBulletPool interface + BulletPool
+    │       ├── Bullet.cs      # 弾の移動・衝突・ダメージ・プール返却
+    │       └── ShooterCore.cs # spread/sequence の共有発射ロジック（internal static）
     ├── Enemy/
-    │   ├── EnemyData.cs       # 敵種パラメータ ScriptableObject
-    │   ├── EnemyController.cs # 敵 AI ハブ、State Machine を駆動
-    │   ├── EnemySensor.cs     # 距離判定（検知・攻撃射程・ロスト）
-    │   ├── EnemyDeathHandler.cs  # Health.OnDied → EnemyController.OnDied()
-    │   └── EnemyFactory.cs    # Prefab Instantiate + Initialize
+    │   ├── EnemyDatas/
+    │   │   └── EnemyData.cs       # 敵種パラメータ ScriptableObject
+    │   ├── EnemyController.cs     # 敵 AI ハブ、State Machine を駆動、Health.OnDied を購読
+    │   ├── EnemySensor.cs         # 距離判定（検知・攻撃射程・ロスト）
+    │   └── EnemyFactory.cs        # Prefab Instantiate + Initialize
     ├── Enemy/Movement/
     │   ├── EnemyMovement.cs         # abstract（Configure / MoveToward / Stop）
     │   ├── EnemyGroundMovement.cs   # 地上横移動（Rigidbody2D.linearVelocity.x）
@@ -46,10 +47,9 @@ Assets/
     │   ├── EnemyChaseState.cs
     │   ├── EnemyAttackState.cs
     │   └── EnemyDeadState.cs
-    ├── Diagnostics/
-    │   └── GameLog.cs             # [Level:ClassName] 形式のコンソールログ
-    └── Dev/
-        └── DummyTarget.cs         # 開発用の被ダメテスト用ターゲット
+    └── Diagnostics/
+        ├── GameLog.cs             # [Level:ClassName] 形式のコンソールログ
+        └── CombatDamageLog.cs     # 被ダメ・死亡をコンソール出力
 ```
 
 ## コアデータフロー（射撃）
@@ -75,11 +75,11 @@ EnemyData (SO)
   └─ EnemyFactory.Create(EnemyData, Vector2)
        └─ Instantiate(EnemyData.prefab)
             └─ EnemyController.Initialize(data, target, bulletPool)
-                 ├─ EnemyStateMachine  ← State インスタンスを生成
-                 ├─ EnemySensor.Configure()
-                 ├─ EnemyMovement.Configure()     ← 実装は Prefab に応じて異なる
-                 ├─ EnemyAttack.Configure()       ← 実装は Prefab に応じて異なる
-                 └─ Health.Initialize()
+                 ├─ Health.Initialize(data.maxHp)
+                 ├─ EnemyMovement.Configure(data.moveSpeed)    ← 実装は Prefab に応じて異なる
+                 ├─ EnemyAttack.Configure(pool, teamId)         ← 実装は Prefab に応じて異なる
+                 ├─ EnemySensor.Configure(target, data.detectionRange, data.loseSightRange)
+                 └─ BuildStateMachine()  ← State インスタンスを生成
 ```
 
 ## システム間の依存関係
@@ -94,7 +94,6 @@ EnemyController ──► EnemyStateMachine ──► EnemyState 各実装
                  ──► EnemySensor
                  ──► EnemyMovement（EnemyGroundMovement / EnemyJumpingGroundMovement / EnemyFlyingMovement）
                  ──► EnemyAttack（EnemyShooterAttack）
-EnemyDeathHandler ──► EnemyController.OnDied()
 EnemyFactory ──► EnemyData ──► EnemyController
 ```
 

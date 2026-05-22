@@ -53,11 +53,18 @@ public class EnemyController : MonoBehaviour
         TeamId teamId = team != null ? team.TeamId : TeamId.Neutral;
 
         Movement.Configure(data.moveSpeed);
-        Attack.Configure(data, bulletPool, teamId);
+        Attack.Configure(bulletPool, teamId);
         Sensor.Configure(target, data.detectionRange, data.loseSightRange);
 
         BuildStateMachine();
+        Health.OnDied += OnDied;
         initialized = true;
+    }
+
+    void OnDestroy()
+    {
+        if (Health != null)
+            Health.OnDied -= OnDied;
     }
 
     void BuildStateMachine()
@@ -77,8 +84,7 @@ public class EnemyController : MonoBehaviour
         stateMachine?.ChangeState(next);
     }
 
-    /// <summary>Called by EnemyDeathHandler when Health.OnDied fires.</summary>
-    public void OnDied()
+    void OnDied()
     {
         ChangeState(DeadState);
     }

@@ -10,10 +10,11 @@ EnemyData (ScriptableObject)
        └─ Instantiate(data.prefab)
             └─ EnemyController.Initialize(data, target, bulletPool)
                  ├─ Health.Initialize(data.maxHp)
-                 ├─ EnemySensor.Configure(data, target)
-                 ├─ EnemyMovement.Configure(data.moveSpeed)   ← Prefab の移動コンポーネントに委譲
-                 ├─ EnemyAttack.Configure(data, bulletPool, teamId)  ← Prefab の攻撃コンポーネントに委譲
-                 └─ EnemyStateMachine（State インスタンスを生成）
+                 ├─ EnemyMovement.Configure(data.moveSpeed)          ← Prefab の移動コンポーネントに委譲
+                 ├─ EnemyAttack.Configure(bulletPool, teamId)         ← Prefab の攻撃コンポーネントに委譲
+                 ├─ EnemySensor.Configure(target, data.detectionRange, data.loseSightRange)
+                 ├─ BuildStateMachine()（State インスタンスを生成）
+                 └─ Health.OnDied を購読
 ```
 
 ## EnemyData（ScriptableObject）
@@ -28,7 +29,6 @@ EnemyData (ScriptableObject)
 | `detectionRange` | ターゲット検知距離 |
 | `loseSightRange` | Chase 離脱距離（≥ detectionRange を推奨） |
 | `attackRange` | 攻撃射程（≤ detectionRange を推奨） |
-| `weaponData` | 使用する WeaponData（EnemyShooterAttack が参照） |
 | `patrolEnabled` | 巡回を行うか |
 | `patrolDistance` | 巡回の片道距離 |
 
@@ -37,11 +37,8 @@ EnemyData (ScriptableObject)
 毎フレーム `EnemyStateMachine.Tick()` を呼び、各 State から `Movement`・`Attack`・`Sensor`・`Data`・`Target` にアクセスできるプロパティを公開します。
 
 ```csharp
-// Factory から呼ばれる
+// Factory から呼ばれる（BuildStateMachine 後に Health.OnDied を購読）
 void Initialize(EnemyData data, Transform target, IBulletPool bulletPool);
-
-// EnemyDeathHandler から呼ばれる
-void OnDied();
 
 // State から呼ばれる
 void ChangeState(EnemyState nextState);
@@ -54,17 +51,13 @@ void ChangeState(EnemyState nextState);
 距離判定を 1 か所に集め、将来の Raycast 対応を容易にしています。
 
 ```csharp
-void Configure(EnemyData data, Transform target);
-bool TryDetectTarget();     // detectionRange 以内か
-bool IsInAttackRange();     // attackRange 以内か
-bool HasLostSight();        // loseSightRange を超えたか
+void Configure(Transform target, float detection, float loseSight);
+bool TryDetectTarget(out Transform target);  // detectionRange 以内か
+bool IsInAttackRange(Transform target, float attackRange);  // attackRange 以内か
+bool HasLostSight(Transform target);         // loseSightRange を超えたか
 ```
 
 壁越し視線が必要になったら、このクラスの内部のみ `Physics2D.Raycast` に差し替えます。
-
-## EnemyDeathHandler
-
-`Health.OnDied` を購読し、`EnemyController.OnDied()` を呼ぶだけの橋渡しコンポーネントです。死亡時の実際の処理（Dead State への遷移 → Destroy）は `EnemyController` と `EnemyDeadState` が行います。
 
 ## 移動コンポーネント（EnemyMovement）
 
@@ -89,8 +82,9 @@ abstract void Stop();
 `EnemyAttack` は abstract で、Prefab ごとに実装をアタッチします。
 
 ```csharp
-abstract void Configure(EnemyData data, IBulletPool bulletPool, TeamId team);
-abstract bool CanAttack();   // クールダウン確認
+virtual bool IsAutoFire { get; }            // true: 連続発射 / false: 1バースト後 Chase へ
+abstract void Configure(IBulletPool bulletPool, TeamId ownerTeam);
+abstract bool CanAttack(Transform target);  // クールダウン・ターゲット確認
 abstract void TryAttack(Transform target);
 ```
 
@@ -98,7 +92,7 @@ abstract void TryAttack(Transform target);
 
 | クラス | 特徴 |
 |--------|------|
-| `EnemyShooterAttack` | `ShooterCore` を使いターゲット方向に射撃。`PlayerShooter` と同じ spread/burst ロジック |
+| `EnemyShooterAttack` | `ShooterCore` を使いターゲット方向に射撃。`PlayerShooter` と同じ spread/burst ロジック。`WeaponData` は Prefab Inspector で設定 |
 
 近接攻撃などは `EnemyAttack` を継承した別コンポーネントとして追加します。
 
@@ -124,7 +118,7 @@ class EnemyState
 | `EnemyIdleState` | 停止して待機 | 検知 → Chase、`patrolEnabled` → Patrol |
 | `EnemyPatrolState` | スポーン位置を軸に左右往復 | 検知 → Chase |
 | `EnemyChaseState` | ターゲットに接近 | 攻撃射程内 → Attack、ロスト → Idle/Patrol |
-| `EnemyAttackState` | 停止して射撃 | 攻撃射程外 → Chase、ロスト → Idle/Patrol |
+| `EnemyAttackState` | 停止して射撃 | 攻撃射程外 → Chase、ロスト → Idle/Patrol、セミオート 1 バースト後 → Chase |
 | `EnemyDeadState` | 停止 → 0.5 秒後に `Destroy` | — |
 
 ## EnemyFactory

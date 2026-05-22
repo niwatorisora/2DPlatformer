@@ -6,10 +6,12 @@ using UnityEngine;
 /// </summary>
 public class EnemyShooterAttack : EnemyAttack
 {
+    [SerializeField] WeaponData weaponData;
     [SerializeField] Transform shootOrigin;
+
+    public override bool IsAutoFire => weaponData != null && weaponData.autoFire;
     [SerializeField] float spawnDistanceFromOrigin = 0.4f;
 
-    WeaponData weaponData;
     IBulletPool bulletPool;
     TeamId ownerTeam;
     float nextFireTime;
@@ -20,9 +22,8 @@ public class EnemyShooterAttack : EnemyAttack
         if (shootOrigin == null) shootOrigin = transform;
     }
 
-    public override void Configure(EnemyData data, IBulletPool pool, TeamId team)
+    public override void Configure(IBulletPool pool, TeamId team)
     {
-        weaponData   = data.weaponData;
         bulletPool   = pool;
         ownerTeam    = team;
         nextFireTime = 0f;

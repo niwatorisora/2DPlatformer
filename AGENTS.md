@@ -33,20 +33,20 @@ Documentation index and detailed notes:
   - `PlayerShooter`: mouse aiming, cooldown, spread, burst/sequence firing via `ShooterCore`.
 - `Assets/Scripts/Combat`
   - `Health.cs` contains `DamageContext` (struct), `IDamageable` (interface), and `Health` (MonoBehaviour).
-  - `CombatDamageLog`: optional `Health.OnDamaged` logger (console via `GameLog`).
   - `TeamAffiliation.cs` contains `TeamId` (enum: `Neutral`, `Ally`, `Enemy`) and `TeamAffiliation` (MonoBehaviour).
-- `Assets/Scripts/Combat/Shooting`
+- `Assets/Scripts/Combat/BulletDatas`
   - `BulletData.cs` contains `BulletData` (SO) and `BulletConfig` (readonly struct snapshot).
+- `Assets/Scripts/Combat/WeaponDatas`
   - `WeaponData`: firing behavior — cooldown, simultaneous shot count, spread, sequence count, interval.
+- `Assets/Scripts/Combat/Shooting`
   - `BulletPool.cs` contains `IBulletPool` (interface) and `BulletPool` (MonoBehaviour, `ObjectPool<Bullet>`).
   - `Bullet`: runtime movement, lifetime, collision, team checks, and damage application.
   - `ShooterCore`: internal static class — shared spread and sequence coroutine logic used by both `PlayerShooter` and `EnemyShooterAttack`.
 - `Assets/Scripts/Enemy`
-  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame.
+  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame. Subscribes to `Health.OnDied` in `Initialize` to transition to `EnemyDeadState`.
   - `EnemySensor`: detection range checks (`TryDetectTarget`, `IsInAttackRange`, `HasLostSight`).
-  - `EnemyDeathHandler`: bridges `Health.OnDied` → `EnemyController.OnDied()`.
   - `EnemyFactory`: `Create(EnemyData, Vector2)` — Instantiate + Initialize.
-  - `EnemyData` (SO): per-type parameters (HP, speed, ranges, `WeaponData`, patrol settings).
+  - `EnemyData` (SO): per-type parameters (HP, speed, detection/attack ranges, patrol settings). Does not include weapon config — that lives on the Prefab's `EnemyShooterAttack`.
 - `Assets/Scripts/Enemy/Movement`
   - `EnemyMovement` (abstract): `Configure / MoveToward / Stop`.
   - `EnemyGroundMovement`: ground horizontal movement via `Rigidbody2D.linearVelocity.x`.
@@ -54,14 +54,13 @@ Documentation index and detailed notes:
   - `EnemyFlyingMovement`: full 2D movement, `gravityScale=0`, Lerp steering.
 - `Assets/Scripts/Enemy/Attack`
   - `EnemyAttack` (abstract): `Configure / CanAttack / TryAttack`.
-  - `EnemyShooterAttack`: shoots toward target using `ShooterCore` and `WeaponData`.
+  - `EnemyShooterAttack`: shoots toward target using `ShooterCore`. `WeaponData` is a `[SerializeField]` set in the Prefab Inspector; `IBulletPool` is injected via `Configure` at spawn time.
 - `Assets/Scripts/Enemy/States`
   - `EnemyStateMachine.cs` contains `EnemyState` (abstract) and `EnemyStateMachine`.
   - State implementations: `EnemyIdleState`, `EnemyPatrolState`, `EnemyChaseState`, `EnemyAttackState`, `EnemyDeadState`.
 - `Assets/Scripts/Diagnostics`
   - `GameLog`: standardized Unity Console logging with `[Level:ClassName]` prefixes.
-- `Assets/Scripts/Dev`
-  - Prototype-only helpers such as `DummyTarget`.
+  - `CombatDamageLog`: optional `Health.OnDamaged` / `Health.OnDied` logger (console via `GameLog`).
 
 Core data flow:
 1. A shooter (`PlayerShooter` / `EnemyShooterAttack`) reads `WeaponData`.

@@ -42,6 +42,7 @@
 | フィールド | 説明 |
 |-----------|------|
 | `bulletData` | 使用する `BulletData` |
+| `autoFire` | `true` のとき長押し連続発射。`false`（デフォルト）はクリックごとに 1 バースト |
 | `cooldown` | 発射間隔（秒） |
 | `simultaneousShotCount` | 同時発射数（ショットガンは 8 など） |
 | `spreadAngle` | 拡散角（度）。0 なら直線 |
@@ -52,11 +53,12 @@
 
 **設定例:**
 
-| 武器種 | simultaneous | spread | sequence | interval |
-|--------|-------------|--------|----------|----------|
-| ハンドガン | 1 | 0 | 1 | 0 |
-| ショットガン | 8 | 5 | 1 | 0 |
-| バーストライフル | 1 | 0 | 3 | 0.08 |
+| 武器種 | autoFire | simultaneous | spread | sequence | interval |
+|--------|----------|-------------|--------|----------|----------|
+| ハンドガン | false | 1 | 0 | 1 | 0 |
+| ショットガン | false | 8 | 5 | 1 | 0 |
+| バーストライフル | false | 1 | 0 | 3 | 0.08 |
+| マシンガン | true | 1 | 1–3 | 1 | 0 |
 
 ## 発射ロジック（ShooterCore）
 
@@ -64,13 +66,15 @@
 
 ```csharp
 // spread + simultaneous 発射
-static void FireSpread(WeaponData weapon, BulletConfig config,
-    IBulletPool pool, Vector2 origin, Vector2 baseDir, TeamId team);
+static void FireSpread(Vector2 direction, BulletConfig config,
+    WeaponData weaponData, IBulletPool bulletPool,
+    GameObject owner, TeamId ownerTeam, Func<Vector2, Vector2> getSpawnPos);
 
 // burst / sequence コルーチン
-static IEnumerator FireSequenceRoutine(MonoBehaviour owner,
-    WeaponData weapon, BulletConfig config,
-    IBulletPool pool, Func<Vector2> getOrigin, Func<Vector2> getDir, TeamId team);
+// doOneSalvo: 1サルボ分の FireSpread 呼び出し
+// onComplete: コルーチン終了後のコールバック（fireSequence = null など）
+static IEnumerator FireSequenceRoutine(WeaponData weaponData,
+    Action doOneSalvo, Action onComplete);
 ```
 
 ### PlayerShooter と EnemyShooterAttack の違い
@@ -88,8 +92,8 @@ static IEnumerator FireSequenceRoutine(MonoBehaviour owner,
 ```csharp
 public interface IBulletPool
 {
-    void Shoot(BulletConfig config, Vector2 position, Vector2 direction, TeamId ownerTeam,
-               IEnumerable<Collider2D> ownerColliders);
+    void Shoot(Vector2 position, Vector2 direction, BulletConfig config,
+               GameObject owner, TeamId ownerTeam);
 }
 ```
 
@@ -106,22 +110,24 @@ public interface IBulletPool
 
 発射から返却までの流れ：
 
-1. `BulletPool` がプールから取り出し `Launch(config, position, direction, team, ownerColliders)` を呼ぶ
+1. `BulletPool` がプールから取り出し `Launch(onRelease, direction, config, owner, ownerTeam)` を呼ぶ
 2. `Rigidbody2D` に初速を与え、`useGravity` に応じて `gravityScale` を設定
-3. `OverlapCircle` で発射直後の重複コライダーを無視リストに追加
+3. `col.Overlap()` で発射直後に重複しているコライダーを即時 `ProcessHit` で処理
 4. `OnTriggerEnter2D` で衝突検知 → `ProcessHit()` で命中判定
 5. ダメージ適用またはスルー後、必要に応じてプールに返却
 
 ### 命中判定の順序
 
 ```
-1. IsOwnerCollider?     → true → スルー（return）
-2. hitMask にレイヤーが含まれる?  → false → スルー（return）
-3. IDamageable を取得
-4. IsFriendlyCollider?  → true → スルー（return）
-5. IDamageable が null? → プール返却（地形等）
-6. CanReceiveDamage?    → false → スルー（return）
-7. TakeDamage()         → プール返却
+1. hitMask にレイヤーが含まれる?  → false → スルー（return）
+2. IsOwnerCollider?     → true → スルー（return）
+3. IDamageable を GetComponentInParent で取得
+4. IDamageable が存在する場合:
+   a. CanReceiveDamage? → false → スルー（return）
+   b. TakeDamage()      → プール返却
+5. IDamageable が存在しない場合:
+   a. IsFriendlyCollider? → true → スルー（return）
+   b. hitMask 内の非 Damageable オブジェクト → プール返却（地形等）
 ```
 
 ## 拡張方針

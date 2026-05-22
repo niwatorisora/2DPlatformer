@@ -47,7 +47,7 @@ Assets/
 1. `Assets/Weapons/` を右クリック → `Create → Combat → Weapon Data`
 2. 名前を `<武器名>.asset` に設定（例: `SniperRifle.asset`）
 3. Inspector で `bulletData` を参照し、cooldown / simultaneous / spread / sequence / interval を設定
-4. `PlayerShooter` または `EnemyData.weaponData` に参照をセット
+4. `PlayerShooter` または `EnemyShooterAttack` Prefab の **Weapon Data** フィールドに参照をセット
 
 **パラメータ設計の指針:**
 
@@ -64,10 +64,11 @@ Assets/
    - 必須コンポーネント: `EnemyController`, `EnemySensor`, `EnemyDeathHandler`, `Health`, `TeamAffiliation`（Enemy=2）, `CombatDamageLog`（任意）
    - 移動コンポーネント: `EnemyGroundMovement` / `EnemyJumpingGroundMovement` / `EnemyFlyingMovement` のいずれか
    - 攻撃コンポーネント: `EnemyShooterAttack`（または将来の近接コンポーネント）
+     - `EnemyShooterAttack` を使う場合は **Weapon Data** フィールドに `WeaponData` アセットをセットする
 2. **EnemyData を作成** — `Assets/Prefab/` を右クリック → `Create → Combat → Enemy Data`
    - 名前は `<種別>EnemyData.asset`（例: `FlyingEnemyData.asset`）
    - `prefab` に上で作った Prefab をセット
-   - HP・速度・射程・武器などを設定
+   - HP・速度・射程・巡回などを設定（武器は Prefab の `EnemyShooterAttack` コンポーネントで設定）
 
 3. **EnemyFactory を確認** — シーンの `EnemyFactory` の `debugEnemyData` に新しい EnemyData をセットするとデバッグスポーンで確認できます
 

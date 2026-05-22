@@ -24,7 +24,10 @@ public class PlayerShooter : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) ShootAtMouse();
+        bool triggered = weaponData != null && weaponData.autoFire
+            ? Input.GetMouseButton(0)
+            : Input.GetMouseButtonDown(0);
+        if (triggered) ShootAtMouse();
     }
 
     void ShootAtMouse()

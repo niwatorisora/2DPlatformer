@@ -87,9 +87,10 @@ event Action       OnDied;
 ```csharp
 public readonly struct DamageContext
 {
-    public readonly int    Amount;
-    public readonly TeamId AttackerTeam;
-    public readonly bool   IgnoreFriendlyFire;  // 将来拡張用
+    public readonly int         amount;
+    public readonly GameObject  source;       // 発射した GameObject
+    public readonly TeamId      sourceTeam;
+    public readonly Collider2D  hitCollider;  // 命中したコライダー
 }
 ```
 

@@ -79,7 +79,6 @@ GameObject:
   - component: {fileID: 2899171968262789883}
   - component: {fileID: 7966231228217588190}
   - component: {fileID: 3109894359082091245}
-  - component: {fileID: 5868842094242272691}
   - component: {fileID: 4052817623057333521}
   - component: {fileID: 1242944934709650969}
   m_Layer: 7
@@ -263,6 +262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79d4a0e29bd613e06abbfd51450762b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooterAttack
+  weaponData: {fileID: 11400000, guid: 6e6a9346d6ebf1bb8804d2283f5325df, type: 2}
   shootOrigin: {fileID: 1345428452135630311}
   spawnDistanceFromOrigin: 0.4
 --- !u!114 &2899171968262789883
@@ -303,18 +303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 256ec3759a515e2d8968f0a3d15f3b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
---- !u!114 &5868842094242272691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7492890432487074393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97a5edd6640c389f1899880dc7eb6b47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
 --- !u!114 &4052817623057333521
 MonoBehaviour:
   m_ObjectHideFlags: 0

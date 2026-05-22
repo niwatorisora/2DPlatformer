@@ -1,14 +1,19 @@
 /// <summary>
 /// Enemy stands still and fires at the target. Returns to Chase if the target
-/// moves out of attack range.
+/// moves out of attack range or sight.
+/// Full-auto weapons fire every cooldown; semi-auto weapons fire one burst then
+/// return to Chase to reposition before the next shot.
 /// </summary>
 public class EnemyAttackState : EnemyState
 {
+    bool attackInitiated;
+
     public EnemyAttackState(EnemyController controller) : base(controller) { }
 
     public override void Enter()
     {
         controller.Movement.Stop();
+        attackInitiated = false;
     }
 
     public override void Tick(float deltaTime)
@@ -27,6 +32,25 @@ public class EnemyAttackState : EnemyState
             return;
         }
 
-        controller.Attack.TryAttack(controller.Target);
+        if (controller.Attack.IsAutoFire)
+        {
+            controller.Attack.TryAttack(controller.Target);
+        }
+        else
+        {
+            if (!attackInitiated)
+            {
+                if (controller.Attack.CanAttack(controller.Target))
+                {
+                    controller.Attack.TryAttack(controller.Target);
+                    attackInitiated = true;
+                }
+            }
+            else if (controller.Attack.CanAttack(controller.Target))
+            {
+                // Burst complete and cooldown expired — reposition before next shot.
+                controller.ChangeState(controller.ChaseState);
+            }
+        }
     }
 }
