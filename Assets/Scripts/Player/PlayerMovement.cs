@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     float horizontalInput;
     bool isGrounded;
+    bool hasJumped;
 
     void Awake()
     {
@@ -25,8 +26,13 @@ public class PlayerMovement : MonoBehaviour
         // Ground check stays in Update so jump input and grounded state are sampled together.
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
 
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (!isGrounded) hasJumped = false;
+
+        if (isGrounded && !hasJumped && Input.GetButtonDown("Jump"))
+        {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            hasJumped = true;
+        }
     }
 
     void FixedUpdate()
