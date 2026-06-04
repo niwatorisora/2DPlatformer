@@ -58,6 +58,13 @@ Documentation index and detailed notes:
 - `Assets/Scripts/Enemy/States`
   - `EnemyStateMachine.cs` contains `EnemyState` (abstract) and `EnemyStateMachine`.
   - State implementations: `EnemyIdleState`, `EnemyPatrolState`, `EnemyChaseState`, `EnemyAttackState`, `EnemyDeadState`.
+- `Assets/Scripts/Enemy/Spawn`
+  - `EnemySpawnPoint`: scene-level spawn location with `groupId`, Gizmo display, and `IsBlocked()` check via `Physics2D.OverlapCircle`.
+  - `SpawnContext`: struct with `waveIndex`, `difficulty`, `useSeed`, and integer `seed` for optional reproducibility.
+  - `EnemySpawnEntry` (Serializable): delay, spawn point group IDs, count scale (base + difficulty bonus or AnimationCurve), weighted `EnemyCandidate` list.
+  - `EnemySpawnPattern` (SO): sequence of timed spawn entries with a selection weight.
+  - `EnemySpawnPatternSet` (SO): collection of pattern candidates.
+  - `EnemySpawnPatternRunner`: MonoBehaviour pattern executor. `Play(set, context)` selects a weighted pattern, iterates entries, picks spawn points avoiding blocks and duplicates, and spawns via `EnemyFactory.Create`. Rejects duplicate calls, supports `Stop()`, fires `OnCompleted` only on normal completion, and fires `OnStopped` on cancellation.
 - `Assets/Scripts/Diagnostics`
   - `GameLog`: standardized Unity Console logging with `[Level:ClassName]` prefixes.
   - `CombatDamageLog`: optional `Health.OnDamaged` / `Health.OnDied` logger (console via `GameLog`).

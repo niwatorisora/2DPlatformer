@@ -47,6 +47,13 @@ Assets/
     │   ├── EnemyChaseState.cs
     │   ├── EnemyAttackState.cs
     │   └── EnemyDeadState.cs
+    ├── Enemy/Spawn/
+    │   ├── EnemySpawnPoint.cs         # 出現地点（groupId, Gizmo）
+    │   ├── SpawnContext.cs            # 実行時入力（waveIndex, difficulty, useSeed, seed）
+    │   ├── EnemySpawnEntry.cs         # 時間差付き出現エントリ
+    │   ├── EnemySpawnPattern.cs       # ScriptableObject（エントリ列）
+    │   ├── EnemySpawnPatternSet.cs    # ScriptableObject（パターン候補）
+    │   └── EnemySpawnPatternRunner.cs # パターン実行器
     └── Diagnostics/
         ├── GameLog.cs             # [Level:ClassName] 形式のコンソールログ
         └── CombatDamageLog.cs     # 被ダメ・死亡をコンソール出力

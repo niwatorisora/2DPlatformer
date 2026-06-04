@@ -452,106 +452,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &722605527
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 722605528}
-  - component: {fileID: 722605529}
-  m_Layer: 0
-  m_Name: SpawnPointR
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &722605528
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 722605527}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.6, y: -2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &722605529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 722605527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6626aeee1c27422bb59cd751886e91bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
-  groupId: default
-  radius: 1
-  blockageMask:
-    serializedVersion: 2
-    m_Bits: 0
---- !u!1 &854319950
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 854319952}
-  - component: {fileID: 854319951}
-  m_Layer: 0
-  m_Name: SpawnDirector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &854319951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 854319950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5492a1d66ab49adb9f25d0cca209d06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPatternRunner
-  patternSet: {fileID: 11400000, guid: 4d793c1021e8f8e6fbdb8cb318bbe13c, type: 2}
-  enemyFactory: {fileID: 3141592003}
-  playOnStart: 0
-  debugWaveIndex: 0
-  debugDifficulty: 1
-  debugUseSeed: 0
-  debugSeed: 0
---- !u!4 &854319952
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 854319950}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.33431, y: -1.43375, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1061276390
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,55 +806,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e8f91a2b3d4e5f8a9b0c1d2e3f4a5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatDamageLog
---- !u!1 &1637720539
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1637720540}
-  - component: {fileID: 1637720541}
-  m_Layer: 0
-  m_Name: SpawnPointL
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1637720540
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1637720539}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.49, y: -2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1637720541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1637720539}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6626aeee1c27422bb59cd751886e91bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
-  groupId: default
-  radius: 1
-  blockageMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!1 &1732235465
 GameObject:
   m_ObjectHideFlags: 0
@@ -2360,7 +2211,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFactory
   bulletPool: {fileID: 372779691}
   playerTarget: {fileID: 1158802514}
-  debugEnemyData: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
+  debugEnemyData: {fileID: 11400000, guid: f3c314fa27f650291ba180522be0273b, type: 2}
   spawnOnStart: 1
   spawnOffset: {x: 0, y: 0}
 --- !u!1660057539 &9223372036854775807
@@ -2374,6 +2225,3 @@ SceneRoots:
   - {fileID: 1732235467}
   - {fileID: 372779690}
   - {fileID: 3141592002}
-  - {fileID: 1637720540}
-  - {fileID: 722605528}
-  - {fileID: 854319952}

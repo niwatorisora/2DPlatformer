@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f698d029ade8fb8639cf0ce2b8ff6639, type: 3}
-  m_Name: NewEnemy
+  m_Name: BasicEnemy
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-prefab: {fileID: 7492890432487074393, guid: b2c6ec9c67bd0447793ca6be603c5b71, type: 3}
-teamId: 2
-maxHp: 100
-moveSpeed: 3
-detectionRange: 6
-loseSightRange: 8
-attackRange: 4
-patrolEnabled: 0
-patrolDistance: 3
+  prefab: {fileID: 7492890432487074393, guid: 2a6d28d84841d5f0faa8b7400cc55dc6, type: 3}
+  teamId: 2
+  maxHp: 100
+  moveSpeed: 3
+  detectionRange: 6
+  loseSightRange: 8
+  attackRange: 4
+  patrolEnabled: 0
+  patrolDistance: 3

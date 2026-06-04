@@ -12,8 +12,8 @@ EnemyData (ScriptableObject)
             └─ EnemyController.Initialize(data, target, bulletPool)
                  ├─ Health / TeamAffiliation / EnemySensor が無ければ AddComponent
                  ├─ Health.Initialize(data.maxHp)
-                 ├─ EnemyMovement.Configure(data.moveSpeed)          ← Prefab の移動コンポーネントに委譲
-                 ├─ EnemyAttack.Configure(bulletPool, teamId)         ← Prefab の攻撃コンポーネントに委譲
+                 ├─ EnemyMovement.Configure(data.moveSpeed) ← Prefab の移動コンポーネントに委譲
+                 ├─ EnemyAttack.Configure(bulletPool, teamId) ← Prefab の攻撃コンポーネントに委譲
                  ├─ EnemySensor.Configure(target, data.detectionRange, data.loseSightRange)
                  ├─ BuildStateMachine()（State インスタンスを生成）
                  └─ Health.OnDied を購読
