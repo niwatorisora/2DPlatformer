@@ -47,6 +47,13 @@ Assets/
     │   ├── EnemyChaseState.cs
     │   ├── EnemyAttackState.cs
     │   └── EnemyDeadState.cs
+    ├── Enemy/Spawn/
+    │   ├── EnemySpawnPoint.cs         # 出現地点（groupId, Gizmo）
+    │   ├── SpawnContext.cs            # 実行時入力（waveIndex, difficulty, useSeed, seed）
+    │   ├── EnemySpawnEntry.cs         # 時間差付き出現エントリ
+    │   ├── EnemySpawnPattern.cs       # ScriptableObject（エントリ列）
+    │   ├── EnemySpawnPatternSet.cs    # ScriptableObject（パターン候補）
+    │   └── EnemySpawnPatternRunner.cs # パターン実行器
     └── Diagnostics/
         ├── GameLog.cs             # [Level:ClassName] 形式のコンソールログ
         └── CombatDamageLog.cs     # 被ダメ・死亡をコンソール出力
@@ -74,13 +81,17 @@ PlayerShooter / EnemyShooterAttack
 EnemyData (SO)
   └─ EnemyFactory.Create(EnemyData, Vector2)
        └─ Instantiate(EnemyData.prefab)
+            ├─ EnemyController が無ければ AddComponent
             └─ EnemyController.Initialize(data, target, bulletPool)
+                 ├─ Health / TeamAffiliation / EnemySensor が無ければ AddComponent
                  ├─ Health.Initialize(data.maxHp)
                  ├─ EnemyMovement.Configure(data.moveSpeed)    ← 実装は Prefab に応じて異なる
                  ├─ EnemyAttack.Configure(pool, teamId)         ← 実装は Prefab に応じて異なる
                  ├─ EnemySensor.Configure(target, data.detectionRange, data.loseSightRange)
                  └─ BuildStateMachine()  ← State インスタンスを生成
 ```
+
+敵の共通 gameplay 値（陣営、HP、速度、検知/攻撃距離、巡回）は `EnemyData` が source of truth です。Prefab は移動/攻撃 component の種類と、その component 固有の Inspector 値を持ちます。
 
 ## システム間の依存関係
 

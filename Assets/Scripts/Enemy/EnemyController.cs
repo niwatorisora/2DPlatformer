@@ -6,8 +6,6 @@ using UnityEngine;
 /// Wiring is done through Initialize so the same Prefab works both with
 /// EnemyFactory (runtime spawn) and manual scene placement.
 /// </summary>
-[RequireComponent(typeof(Health))]
-[RequireComponent(typeof(TeamAffiliation))]
 public class EnemyController : MonoBehaviour
 {
     // --- Component references resolved in Awake ---
@@ -32,25 +30,47 @@ public class EnemyController : MonoBehaviour
 
     void Awake()
     {
-        Movement = GetComponent<EnemyMovement>();
-        Attack   = GetComponent<EnemyAttack>();
-        Sensor   = GetComponent<EnemySensor>();
-        Health   = GetComponent<Health>();
+        CacheComponents();
     }
 
     /// <summary>
     /// Called by EnemyFactory (or a scene-placement helper) to inject runtime deps.
     /// Safe to call multiple times; subsequent calls re-initialize with new data.
     /// </summary>
-    public void Initialize(EnemyData data, Transform target, IBulletPool bulletPool)
+    public bool Initialize(EnemyData data, Transform target, IBulletPool bulletPool)
     {
+        if (data == null)
+        {
+            GameLog.Error(this, "EnemyData is null; cannot initialize enemy.");
+            return false;
+        }
+
+        if (Health != null)
+            Health.OnDied -= OnDied;
+
+        initialized = false;
         Data   = data;
         Target = target;
+
+        EnsureRuntimeComponents();
+
+        if (Movement == null)
+        {
+            GameLog.Error(this, $"{data.name} prefab requires an EnemyMovement component to define movement behavior.");
+            return false;
+        }
+
+        if (Attack == null)
+        {
+            GameLog.Error(this, $"{data.name} prefab requires an EnemyAttack component to define attack behavior.");
+            return false;
+        }
 
         Health.Initialize(data.maxHp);
 
         var team = GetComponent<TeamAffiliation>();
-        TeamId teamId = team != null ? team.TeamId : TeamId.Neutral;
+        TeamId teamId = data.teamId;
+        team.SetTeam(teamId);
 
         Movement.Configure(data.moveSpeed);
         Attack.Configure(bulletPool, teamId);
@@ -59,6 +79,7 @@ public class EnemyController : MonoBehaviour
         BuildStateMachine();
         Health.OnDied += OnDied;
         initialized = true;
+        return true;
     }
 
     void OnDestroy()
@@ -77,6 +98,28 @@ public class EnemyController : MonoBehaviour
 
         stateMachine = new EnemyStateMachine();
         stateMachine.ChangeState(IdleState);
+    }
+
+    void CacheComponents()
+    {
+        Movement = GetComponent<EnemyMovement>();
+        Attack   = GetComponent<EnemyAttack>();
+        Sensor   = GetComponent<EnemySensor>();
+        Health   = GetComponent<Health>();
+    }
+
+    void EnsureRuntimeComponents()
+    {
+        CacheComponents();
+
+        if (GetComponent<TeamAffiliation>() == null)
+            gameObject.AddComponent<TeamAffiliation>();
+
+        if (Health == null)
+            Health = gameObject.AddComponent<Health>();
+
+        if (Sensor == null)
+            Sensor = gameObject.AddComponent<EnemySensor>();
     }
 
     public void ChangeState(EnemyState next)

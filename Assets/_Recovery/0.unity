@@ -2211,8 +2211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFactory
   bulletPool: {fileID: 372779691}
   playerTarget: {fileID: 1158802514}
-  debugEnemyData: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
-  spawnOnStart: 0
+  debugEnemyData: {fileID: 11400000, guid: f3c314fa27f650291ba180522be0273b, type: 2}
+  spawnOnStart: 1
   spawnOffset: {x: 0, y: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

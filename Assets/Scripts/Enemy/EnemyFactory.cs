@@ -39,13 +39,14 @@ public class EnemyFactory : MonoBehaviour
         GameObject instance = Instantiate(data.prefab, position, Quaternion.identity);
         var controller = instance.GetComponent<EnemyController>();
         if (controller == null)
+            controller = instance.AddComponent<EnemyController>();
+
+        if (!controller.Initialize(data, playerTarget, bulletPool))
         {
-            GameLog.Error(this, $"{data.name} prefab is missing EnemyController.");
             Destroy(instance);
             return null;
         }
 
-        controller.Initialize(data, playerTarget, bulletPool);
         GameLog.Debug(this, $"Spawned {data.name} at {position}.");
         return controller;
     }
