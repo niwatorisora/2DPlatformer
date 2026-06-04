@@ -16,7 +16,7 @@ MonoBehaviour:
   lifeTime: 10
   useGravity: 0
   gravityScale: 1
-  damage: 10
+  damage: 2
   hitMask:
     serializedVersion: 2
     m_Bits: 456

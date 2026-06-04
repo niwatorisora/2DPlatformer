@@ -11,6 +11,7 @@ public class EnemyData : ScriptableObject
     public GameObject prefab;
 
     [Header("Stats")]
+    public TeamId teamId = TeamId.Enemy;
     public int maxHp = 100;
 
     [Header("Movement")]

@@ -16,6 +16,11 @@ public class TeamAffiliation : MonoBehaviour
 
     public TeamId TeamId => teamId;
 
+    public void SetTeam(TeamId newTeamId)
+    {
+        teamId = newTeamId;
+    }
+
     /// <summary>
     /// Neutral is intentionally never friendly so environment objects do not become allied.
     /// </summary>

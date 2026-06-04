@@ -61,22 +61,24 @@ Assets/
 ## 新しい敵種の追加（コード変更不要）
 
 1. **Prefab を作成** — 既存 Enemy Prefab を複製するか新規作成
-   - 必須コンポーネント: `EnemyController`, `EnemySensor`, `EnemyDeathHandler`, `Health`, `TeamAffiliation`（Enemy=2）, `CombatDamageLog`（任意）
-   - 移動コンポーネント: `EnemyGroundMovement` / `EnemyJumpingGroundMovement` / `EnemyFlyingMovement` のいずれか
-   - 攻撃コンポーネント: `EnemyShooterAttack`（または将来の近接コンポーネント）
+   - 必須コンポーネント: `EnemyGroundMovement` / `EnemyJumpingGroundMovement` / `EnemyFlyingMovement` など、`EnemyMovement` 実装のいずれか
+   - 必須コンポーネント: `EnemyShooterAttack` など、`EnemyAttack` 実装のいずれか
+   - Runtime wiring: `EnemyController`, `EnemySensor`, `Health`, `TeamAffiliation` は Factory/Controller が不足時に追加する
+   - 任意コンポーネント: `CombatDamageLog`
      - `EnemyShooterAttack` を使う場合は **Weapon Data** フィールドに `WeaponData` アセットをセットする
 2. **EnemyData を作成** — `Assets/Prefab/` を右クリック → `Create → Combat → Enemy Data`
    - 名前は `<種別>EnemyData.asset`（例: `FlyingEnemyData.asset`）
    - `prefab` に上で作った Prefab をセット
-   - HP・速度・射程・巡回などを設定（武器は Prefab の `EnemyShooterAttack` コンポーネントで設定）
+   - 陣営・HP・速度・射程・巡回などの共通値を設定（武器やジャンプ設定などの固有値は Prefab の movement/attack コンポーネントで設定）
 
 3. **EnemyFactory を確認** — シーンの `EnemyFactory` の `debugEnemyData` に新しい EnemyData をセットするとデバッグスポーンで確認できます
 
-## Prefab の陣営設定
+## 陣営設定
 
-| コンポーネント | フィールド | 敵の値 | プレイヤーの値 |
-|--------------|-----------|--------|--------------|
-| `TeamAffiliation` | `teamId` | `Enemy`（= 2） | `Ally`（= 1） |
+| 対象 | 設定場所 | 通常の値 |
+|------|----------|----------|
+| 敵 | `EnemyData.teamId` | `Enemy`（= 2） |
+| プレイヤー | `TeamAffiliation.teamId` | `Ally`（= 1） |
 
 > `Player` という enum 値は存在しません。プレイヤーには `Ally` を設定してください。
 

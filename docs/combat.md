@@ -32,10 +32,10 @@ public enum TeamId
 
 ### Inspector での設定
 
-| GameObject | teamId |
-|-----------|--------|
-| Player | `Ally`（= 1） |
-| Enemy Prefab | `Enemy`（= 2） |
+| 対象 | 設定場所 | teamId |
+|------|----------|--------|
+| Player | `TeamAffiliation` | `Ally`（= 1） |
+| Enemy | `EnemyData` | `Enemy`（= 2） |
 
 ### 味方判定（AreFriendly）
 

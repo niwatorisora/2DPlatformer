@@ -37,6 +37,7 @@ public interface IDamageable
 [RequireComponent(typeof(TeamAffiliation))]
 public class Health : MonoBehaviour, IDamageable
 {
+    [Tooltip("Initial HP for manually placed actors. Enemies spawned by EnemyFactory use EnemyData.maxHp instead.")]
     [SerializeField] int maxHp = 100;
     [SerializeField] bool isInvulnerable;
 

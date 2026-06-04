@@ -43,10 +43,10 @@ Documentation index and detailed notes:
   - `Bullet`: runtime movement, lifetime, collision, team checks, and damage application.
   - `ShooterCore`: internal static class — shared spread and sequence coroutine logic used by both `PlayerShooter` and `EnemyShooterAttack`.
 - `Assets/Scripts/Enemy`
-  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame. Subscribes to `Health.OnDied` in `Initialize` to transition to `EnemyDeadState`.
+  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame. `Initialize` guarantees runtime-only `Health`, `TeamAffiliation`, and `EnemySensor` when missing, then subscribes to `Health.OnDied` to transition to `EnemyDeadState`.
   - `EnemySensor`: detection range checks (`TryDetectTarget`, `IsInAttackRange`, `HasLostSight`).
-  - `EnemyFactory`: `Create(EnemyData, Vector2)` — Instantiate + Initialize.
-  - `EnemyData` (SO): per-type parameters (HP, speed, detection/attack ranges, patrol settings). Does not include weapon config — that lives on the Prefab's `EnemyShooterAttack`.
+  - `EnemyFactory`: `Create(EnemyData, Vector2)` — Instantiate + ensure `EnemyController` + Initialize.
+  - `EnemyData` (SO): per-type shared gameplay parameters (team, HP, speed, detection/attack ranges, patrol settings). Does not include movement/attack-specific config — those live on the Prefab's movement/attack components.
 - `Assets/Scripts/Enemy/Movement`
   - `EnemyMovement` (abstract): `Configure / MoveToward / Stop`.
   - `EnemyGroundMovement`: ground horizontal movement via `Rigidbody2D.linearVelocity.x`.
@@ -88,6 +88,10 @@ Useful validation:
   - Bullet behavior belongs in `BulletData`.
   - Firing behavior belongs in `WeaponData`.
 - Do not reintroduce per-fire-mode strategy classes for single/shotgun/burst unless the generic `simultaneousShotCount + spreadAngle + sequenceShotCount + sequenceInterval` model is no longer sufficient.
+- Enemy authoring source of truth:
+  - Shared values such as team, HP, movement speed, detection range, attack range, and patrol settings belong in `EnemyData`.
+  - Movement/attack behavior selection and behavior-specific Inspector fields belong on Prefab components (`EnemyMovement` / `EnemyAttack` implementations).
+  - `Health`, `TeamAffiliation`, `EnemySensor`, and `EnemyController` are runtime wiring components for enemies; do not use Prefab `Health.maxHp` or Prefab `TeamAffiliation.teamId` as enemy tuning data.
 - Friendly-fire logic requires `TeamAffiliation`. Do not infer team identity from Layer names alone.
 - Layers and `BulletData.hitMask` are broad collision filters. They decide what a bullet can collide with, not which side owns an object.
 - Objects in `hitMask` without `IDamageable` stop bullets without taking damage. Use this for terrain and non-damageable blockers.
@@ -161,3 +165,47 @@ Summarize:
 - State assumptions when behavior is ambiguous.
 - Do not add dependencies unless the benefit is clear for this prototype.
 - Keep documentation and `AGENTS.md` updated when architecture or workflow changes.
+
+
+<!-- headroom:rtk-instructions -->
+# RTK (Rust Token Killer) - Token-Optimized Commands
+
+When running shell commands, **always prefix with `rtk`**. This reduces context
+usage by 60-90% with zero behavior change. If rtk has no filter for a command,
+it passes through unchanged — so it is always safe to use.
+
+## Key Commands
+```bash
+# Git (59-80% savings)
+rtk git status          rtk git diff            rtk git log
+
+# Files & Search (60-75% savings)
+rtk ls <path>           rtk read <file>         rtk grep <pattern>
+rtk find <pattern>      rtk diff <file>
+
+# Test (90-99% savings) — shows failures only
+rtk pytest tests/       rtk cargo test          rtk test <cmd>
+
+# Build & Lint (80-90% savings) — shows errors only
+rtk tsc                 rtk lint                rtk cargo build
+rtk prettier --check    rtk mypy                rtk ruff check
+
+# Analysis (70-90% savings)
+rtk err <cmd>           rtk log <file>          rtk json <file>
+rtk summary <cmd>       rtk deps                rtk env
+
+# GitHub (26-87% savings)
+rtk gh pr view <n>      rtk gh run list         rtk gh issue list
+
+# Infrastructure (85% savings)
+rtk docker ps           rtk kubectl get         rtk docker logs <c>
+
+# Package managers (70-90% savings)
+rtk pip list            rtk pnpm install        rtk npm run <script>
+```
+
+## Rules
+- In command chains, prefix each segment: `rtk git add . && rtk git commit -m "msg"`
+- For debugging, use raw command without rtk prefix
+- `rtk proxy <cmd>` runs command without filtering but tracks usage
+<!-- /headroom:rtk-instructions -->

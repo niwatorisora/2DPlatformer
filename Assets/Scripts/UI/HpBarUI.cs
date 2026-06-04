@@ -3,8 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Drives a world-space HP bar from the Health component found in the parent hierarchy.
-/// Mirrors CombatDamageLog's Awake/OnEnable subscription pattern so it behaves the same
-/// for factory-spawned and manually placed actors (and survives enable/disable + pooling).
+/// Factory-spawned enemies may receive Health after child OnEnable runs, so binding is retried.
 /// </summary>
 [RequireComponent(typeof(Canvas))]
 public class HpBarUI : MonoBehaviour
@@ -12,43 +11,87 @@ public class HpBarUI : MonoBehaviour
     [SerializeField] Image fill;
 
     Health health;
+    bool subscribed;
+    bool loggedMissingFill;
 
     void Awake()
     {
-        health = GetComponentInParent<Health>();
-
-        // フォールバック: Inspectorで未設定でも子の"Fill"から自動取得
-        if (fill == null)
-            fill = transform.Find("Fill")?.GetComponent<Image>();
+        CacheFill();
+        TryFindHealth();
     }
 
     void OnEnable()
     {
-        if (health == null)
-        {
-            Debug.LogError("[HpBarUI] Health not found in parent hierarchy.", this);
-            return;
-        }
-        if (fill == null)
-        {
-            Debug.LogError("[HpBarUI] Fill Image not found. Assign it in the Inspector or name the child 'Fill'.", this);
-            return;
-        }
+        TrySubscribe(false);
+    }
 
-        health.OnDamaged += OnDamaged;
-        Refresh();
+    void Start()
+    {
+        TrySubscribe(true);
+    }
+
+    void LateUpdate()
+    {
+        if (!subscribed)
+            TrySubscribe(false);
     }
 
     void OnDisable()
     {
-        if (health != null)
-            health.OnDamaged -= OnDamaged;
+        if (!subscribed || health == null) return;
+
+        health.OnDamaged -= OnDamaged;
+        subscribed = false;
     }
 
     void OnDamaged(int _) => Refresh();
 
+    bool TrySubscribe(bool logMissingHealth)
+    {
+        if (subscribed) return true;
+
+        CacheFill();
+        TryFindHealth();
+
+        if (health == null)
+        {
+            if (logMissingHealth)
+                Debug.LogError("[HpBarUI] Health not found in parent hierarchy.", this);
+            return false;
+        }
+
+        if (fill == null)
+        {
+            if (!loggedMissingFill)
+            {
+                Debug.LogError("[HpBarUI] Fill Image not found. Assign it in the Inspector or name the child 'Fill'.", this);
+                loggedMissingFill = true;
+            }
+            return false;
+        }
+
+        health.OnDamaged += OnDamaged;
+        subscribed = true;
+        Refresh();
+        return true;
+    }
+
+    void TryFindHealth()
+    {
+        if (health == null)
+            health = GetComponentInParent<Health>();
+    }
+
+    void CacheFill()
+    {
+        if (fill == null)
+            fill = transform.Find("Fill")?.GetComponent<Image>();
+    }
+
     void Refresh()
     {
+        if (health == null || fill == null) return;
+
         fill.fillAmount = (float)health.CurrentHp / health.MaxHp;
     }
 }
