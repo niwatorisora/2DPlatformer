@@ -34,6 +34,7 @@ EnemyData (ScriptableObject)
 | `attackRange` | 攻撃射程（≤ detectionRange を推奨） |
 | `patrolEnabled` | 巡回を行うか |
 | `patrolDistance` | 巡回の片道距離 |
+| `scoreValue` | 撃破時に加算されるスコア（`EnemyController.OnEnemyKilled` 経由） |
 
 ## EnemyController（AI ハブ）
 
@@ -43,9 +44,14 @@ EnemyData (ScriptableObject)
 // Factory から呼ばれる（BuildStateMachine 後に Health.OnDied を購読）
 bool Initialize(EnemyData data, Transform target, IBulletPool bulletPool);
 
+// 撃破時に全シーンへ通知（ScoreManager が購読）。引数は scoreValue。
+static event Action<int> OnEnemyKilled;
+
 // State から呼ばれる
 void ChangeState(EnemyState nextState);
 ```
+
+死亡時、`Health.OnDied` → `OnEnemyKilled(scoreValue)` → `EnemyDeadState` へ遷移します。
 
 `EnemyController` は `Health` / `TeamAffiliation` / `EnemySensor` を runtime wiring として不足時に追加します。Prefab で必須なのは、その敵の挙動を決める `EnemyMovement` 実装と `EnemyAttack` 実装です。
 
@@ -79,7 +85,7 @@ abstract void Stop();
 
 | クラス | 特徴 | 主な使用 Prefab |
 |--------|------|----------------|
-| `EnemyGroundMovement` | `Rigidbody2D.linearVelocity.x` を FixedUpdate で更新。縦速度は保持 | `Enemy.prefab` |
+| `EnemyGroundMovement` | `Rigidbody2D.linearVelocity.x` を FixedUpdate で更新。縦速度は保持 | `BasicEnemy.prefab` |
 | `EnemyJumpingGroundMovement` | `EnemyGroundMovement` を継承。ターゲットが上方にいるとき自動ジャンプ | `JumpingEnemy.prefab` |
 | `EnemyFlyingMovement` | `gravityScale=0`、全方向 2D 移動。Lerp でスムーズにステアリング | — |
 

@@ -4,10 +4,11 @@ This file is the shared instruction source for coding AI agents working on this 
 
 ## Project Overview
 
-This is a Unity 6000.4.5f1 2D platformer prototype. The current gameplay focus is player movement, mouse-aimed shooting, pooled bullets, ScriptableObject-driven bullet/weapon data, team-based friendly-fire filtering, and a State/Factory-based enemy AI system.
+This is a Unity 6000.4.5f1 2D platformer prototype. The current gameplay focus is player movement, mouse-aimed shooting, magazine/reload ammo, pooled bullets, ScriptableObject-driven bullet/weapon data, team-based friendly-fire filtering, enemy kill scoring, and a State/Factory-based enemy AI system.
 
-Primary scene:
-- `Assets/Scenes/SampleScene.unity`
+Primary scenes:
+- `Assets/Scenes/MainScene1.unity` — gameplay validation (magazine HUD wired)
+- `Assets/Scenes/SampleScene.unity` — minimal prototype
 
 Documentation index and detailed notes:
 - `docs/project-overview.md` — index and quick summary
@@ -30,23 +31,24 @@ Documentation index and detailed notes:
 
 - `Assets/Scripts/Player`
   - `PlayerMovement`: horizontal movement and jump.
-  - `PlayerShooter`: mouse aiming, cooldown, spread, burst/sequence firing via `ShooterCore`.
+  - `PlayerShooter`: mouse aiming, cooldown, spread, burst/sequence firing via `ShooterCore`; optional `Magazine` on same GameObject; `R` triggers manual reload.
 - `Assets/Scripts/Combat`
   - `Health.cs` contains `DamageContext` (struct), `IDamageable` (interface), and `Health` (MonoBehaviour).
   - `TeamAffiliation.cs` contains `TeamId` (enum: `Neutral`, `Ally`, `Enemy`) and `TeamAffiliation` (MonoBehaviour).
 - `Assets/Scripts/Combat/BulletDatas`
   - `BulletData.cs` contains `BulletData` (SO) and `BulletConfig` (readonly struct snapshot).
 - `Assets/Scripts/Combat/WeaponDatas`
-  - `WeaponData`: firing behavior — cooldown, simultaneous shot count, spread, sequence count, interval.
+  - `WeaponData`: firing behavior — cooldown, simultaneous shot count, spread, sequence count, interval, plus magazine settings (`magazineSize`, `reloadTime`, `startingReserveAmmo`, `infiniteReserve`, `autoReloadWhenEmpty`) and `displayName`.
 - `Assets/Scripts/Combat/Shooting`
   - `BulletPool.cs` contains `IBulletPool` (interface) and `BulletPool` (MonoBehaviour, `ObjectPool<Bullet>`).
   - `Bullet`: runtime movement, lifetime, collision, team checks, and damage application.
   - `ShooterCore`: internal static class — shared spread and sequence coroutine logic used by both `PlayerShooter` and `EnemyShooterAttack`.
+  - `Magazine`: runtime ammo state (magazine/reserve/reload). Configured from `WeaponData`; used by player shooter and `AmmoHudView`.
 - `Assets/Scripts/Enemy`
-  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame. `Initialize` guarantees runtime-only `Health`, `TeamAffiliation`, and `EnemySensor` when missing, then subscribes to `Health.OnDied` to transition to `EnemyDeadState`.
+  - `EnemyController`: AI hub; drives `EnemyStateMachine` each frame. `Initialize` guarantees runtime-only `Health`, `TeamAffiliation`, and `EnemySensor` when missing, then subscribes to `Health.OnDied` to fire `OnEnemyKilled(scoreValue)` and transition to `EnemyDeadState`.
   - `EnemySensor`: detection range checks (`TryDetectTarget`, `IsInAttackRange`, `HasLostSight`).
   - `EnemyFactory`: `Create(EnemyData, Vector2)` — Instantiate + ensure `EnemyController` + Initialize.
-  - `EnemyData` (SO): per-type shared gameplay parameters (team, HP, speed, detection/attack ranges, patrol settings). Does not include movement/attack-specific config — those live on the Prefab's movement/attack components.
+  - `EnemyData` (SO): per-type shared gameplay parameters (team, HP, speed, detection/attack ranges, patrol settings, `scoreValue`). Does not include movement/attack-specific config — those live on the Prefab's movement/attack components.
 - `Assets/Scripts/Enemy/Movement`
   - `EnemyMovement` (abstract): `Configure / MoveToward / Stop`.
   - `EnemyGroundMovement`: ground horizontal movement via `Rigidbody2D.linearVelocity.x`.
@@ -67,19 +69,27 @@ Documentation index and detailed notes:
 - `Assets/Scripts/Diagnostics`
   - `GameLog`: standardized Unity Console logging with `[Level:ClassName]` prefixes.
   - `CombatDamageLog`: optional `Health.OnDamaged` / `Health.OnDied` logger (console via `GameLog`).
+- `Assets/Scripts/Score`
+  - `ScoreManager`: subscribes to `EnemyController.OnEnemyKilled`, exposes `Score` and `OnScoreChanged`. One per scene.
+- `Assets/Scripts/UI`
+  - `HpBarUI`: world-space HP bar (`Health.OnDamaged`).
+  - `AmmoHudView`: screen-space ammo HUD (`Magazine.OnAmmoChanged`, shows `{magazine} / {reserve}` and `WeaponData.displayName`).
+  - `ScoreHudView`: screen-space score HUD (`ScoreManager.OnScoreChanged`).
 
 Core data flow:
 1. A shooter (`PlayerShooter` / `EnemyShooterAttack`) reads `WeaponData`.
-2. `WeaponData` points to `BulletData`.
-3. `BulletConfig` snapshots `BulletData` values at fire time.
-4. `ShooterCore` computes spread/sequence and calls `IBulletPool.Shoot`.
-5. `BulletPool` launches pooled `Bullet` instances.
-6. `Bullet` uses `hitMask` and owner/team checks, then calls `IDamageable.TakeDamage` on `Health`.
+2. `PlayerShooter` optionally uses `Magazine` on the same GameObject: `Configure(WeaponData)` on `Awake`, `TryConsume(1)` per salvo before `ShooterCore` fires.
+3. `WeaponData` points to `BulletData`.
+4. `BulletConfig` snapshots `BulletData` values at fire time.
+5. `ShooterCore` computes spread/sequence and calls `IBulletPool.Shoot`.
+6. `BulletPool` launches pooled `Bullet` instances.
+7. `Bullet` uses `hitMask` and owner/team checks, then calls `IDamageable.TakeDamage` on `Health`.
+8. On enemy death: `EnemyController.OnEnemyKilled(scoreValue)` → `ScoreManager.AddScore` → `ScoreHudView`.
 
 ## Development Setup
 
 - Open the project in Unity 6000.4.5f1.
-- Use `Assets/Scenes/SampleScene.unity` for the current prototype scene.
+- Use `Assets/Scenes/MainScene1.unity` for gameplay validation, or `Assets/Scenes/SampleScene.unity` for the minimal prototype.
 - If Unity is already open, do not start a second batchmode Unity instance for the same project.
 - Generated folders such as `Library/`, `Temp/`, `Logs/`, `UserSettings/`, and `Recordings/` are not source files and should remain ignored.
 - Generated project files such as `*.csproj`, `*.sln`, and `*.slnx` should not be committed.
@@ -93,6 +103,8 @@ Useful validation:
 - Keep bullet behavior and weapon firing behavior separate:
   - Bullet behavior belongs in `BulletData`.
   - Firing behavior belongs in `WeaponData`.
+- Magazine ammo **settings** live on `WeaponData`; runtime ammo **state** lives on `Magazine`. One salvo consumes one round (spread pellets do not multiply consumption).
+- `ScoreManager` must be a single instance per scene to avoid duplicate scoring.
 - Do not reintroduce per-fire-mode strategy classes for single/shotgun/burst unless the generic `simultaneousShotCount + spreadAngle + sequenceShotCount + sequenceInterval` model is no longer sufficient.
 - Enemy authoring source of truth:
   - Shared values such as team, HP, movement speed, detection range, attack range, and patrol settings belong in `EnemyData`.

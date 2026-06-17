@@ -123,7 +123,7 @@ public readonly struct DamageContext
 同じ GameObject に付けると `Health.OnDamaged` / `Health.OnDied` を `GameLog` 経由でコンソール出力します。本番では外すか、ビルドフラグで無効化してください。
 
 ```csharp
-// 使用例：Enemy.prefab や Player に付けるだけ
+// 使用例：BasicEnemy.prefab や Player に付けるだけ
 [RequireComponent(typeof(Health))]
 public class CombatDamageLog : MonoBehaviour { ... }
 ```

@@ -9,6 +9,7 @@
 | `BulletData` | ScriptableObject | `BulletData.cs` |
 | `BulletConfig` | readonly struct | `BulletData.cs` |
 | `WeaponData` | ScriptableObject | `WeaponData.cs` |
+| `Magazine` | MonoBehaviour | `Magazine.cs` |
 | `IBulletPool` | interface | `BulletPool.cs` |
 | `BulletPool` | MonoBehaviour | `BulletPool.cs` |
 | `Bullet` | MonoBehaviour | `Bullet.cs` |
@@ -41,6 +42,7 @@
 
 | フィールド | 説明 |
 |-----------|------|
+| `displayName` | HUD などに表示する武器名 |
 | `bulletData` | 使用する `BulletData` |
 | `autoFire` | `true` のとき長押し連続発射。`false`（デフォルト）はクリックごとに 1 バースト |
 | `cooldown` | 発射間隔（秒） |
@@ -48,8 +50,15 @@
 | `spreadAngle` | 拡散角（度）。0 なら直線 |
 | `sequenceShotCount` | 連続発射数（バースト） |
 | `sequenceInterval` | 連続発射間隔（秒） |
+| `magazineSize` | マガジン 1 個の容量 |
+| `reloadTime` | リロード所要秒数 |
+| `startingReserveAmmo` | 開始時の手持ち予備弾 |
+| `infiniteReserve` | `true` なら予備弾無限（マガジン容量だけは有限） |
+| `autoReloadWhenEmpty` | マガジンが空になったら自動でリロード開始 |
 
 `Create → Combat → Weapon Data` で新規作成できます。
+
+弾数の**設定**は `WeaponData`、**ランタイム状態**（残弾・リロード中か）は `Magazine` が保持します。`Magazine` は `Configure(WeaponData)` で初期化し、マガジンを満タンにします。
 
 **設定例:**
 
@@ -59,6 +68,37 @@
 | ショットガン | false | 8 | 5 | 1 | 0 |
 | バーストライフル | false | 1 | 0 | 3 | 0.08 |
 | マシンガン | true | 1 | 1–3 | 1 | 0 |
+
+## 弾数管理（Magazine）
+
+`Magazine` は単一シューター（現状はプレイヤー）のランタイム弾数を管理します。`WeaponData` から容量・リロード時間などを受け取り、残弾と予備弾を保持します。
+
+### 主要 API
+
+```csharp
+void Configure(WeaponData weaponData);  // 容量・予備弾を初期化しマガジン満タン
+bool TryConsume(int count = 1);         // 弾消費。不足/リロード中は false
+void StartReload();                     // 手動リロード開始
+```
+
+### リロードの挙動
+
+- **プール式**: マガジンを容量まで補充し、必要な分だけ予備弾から引く。既にマガジンに入っている弾は失わない。
+- `autoReloadWhenEmpty` が `true` のとき、マガジンが空になると自動で `StartReload()` する。
+- リロード中は `CanFire` が `false` になり発射できない。
+- `infiniteReserve` が `true` のとき予備弾は減らない（HUD では `∞` 表示）。
+
+### イベント（HUD 購読用）
+
+```csharp
+event Action OnAmmoChanged;
+event Action OnReloadStarted;
+event Action OnReloadCompleted;
+```
+
+### 弾消費の単位
+
+`PlayerShooter` は **1 サルボ（`FireSpread` 1 回）につき 1 発** を `TryConsume` します。ショットガンの同時 8 発でも消費は 1 です。バースト（`sequenceShotCount > 1`）ではサルボごとに消費します。
 
 ## 発射ロジック（ShooterCore）
 
@@ -83,7 +123,8 @@ static IEnumerator FireSequenceRoutine(WeaponData weaponData,
 |------|-------------|-------------------|
 | 照準 | マウスカーソル方向 | Target Transform 方向 |
 | 発射起点 | `shootOrigin` Transform 固定 | 発射ごとに Target 方向を再計算 |
-| 入力 | `Input.GetMouseButton(0)` | `EnemyAttackState.Tick()` から呼ばれる |
+| 入力 | `Input.GetMouseButton(0)` / `R` でリロード | `EnemyAttackState.Tick()` から呼ばれる |
+| 弾数 | 同一 GameObject の `Magazine` を使用 | 未使用（無制限射撃） |
 
 ## BulletPool / IBulletPool
 
@@ -133,6 +174,6 @@ public interface IBulletPool
 ## 拡張方針
 
 - **新しい弾種**: `BulletData` アセットを新規作成するだけ。
-- **新しい武器**: `WeaponData` アセットを新規作成し、`bulletData` を参照させるだけ。
+- **新しい武器**: `WeaponData` アセットを新規作成し、`bulletData` を参照させるだけ。プレイヤーに弾数制限を付ける場合は同一 GameObject に `Magazine` を追加し、`PlayerShooter` の `weaponData` と整合させる。
 - **既存の simultaneousShotCount + spreadAngle + sequenceShotCount + sequenceInterval` モデルで表現できない撃ち方が必要になった場合のみ** `ShooterCore` を拡張する。それまで fire-mode ストラテジークラスは追加しない。
 - **敵の新しい攻撃手段（近接など）**: `EnemyAttack` を継承した別コンポーネントを作る（`ShooterCore` は不使用）。
