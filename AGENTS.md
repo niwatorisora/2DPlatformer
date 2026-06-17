@@ -56,8 +56,7 @@ Documentation index and detailed notes:
   - `EnemyAttack` (abstract): `Configure / CanAttack / TryAttack`.
   - `EnemyShooterAttack`: shoots toward target using `ShooterCore`. `WeaponData` is a `[SerializeField]` set in the Prefab Inspector; `IBulletPool` is injected via `Configure` at spawn time.
 - `Assets/Scripts/Enemy/States`
-  - `EnemyStateMachine.cs` contains `EnemyState` (abstract) and `EnemyStateMachine`.
-  - State implementations: `EnemyIdleState`, `EnemyPatrolState`, `EnemyChaseState`, `EnemyAttackState`, `EnemyDeadState`.
+  - `EnemyStateMachine.cs` contains `EnemyState` (abstract), `EnemyStateMachine`, and state implementations: `EnemyIdleState`, `EnemyPatrolState`, `EnemyChaseState`, `EnemyAttackState`, `EnemyDeadState`.
 - `Assets/Scripts/Enemy/Spawn`
   - `EnemySpawnPoint`: scene-level spawn location with `groupId`, Gizmo display, and `IsBlocked()` check via `Physics2D.OverlapCircle`.
   - `SpawnContext`: struct with `waveIndex`, `difficulty`, `useSeed`, and integer `seed` for optional reproducibility.

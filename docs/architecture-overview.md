@@ -41,17 +41,10 @@ Assets/
     │   ├── EnemyAttack.cs         # abstract（Configure / CanAttack / TryAttack）
     │   └── EnemyShooterAttack.cs  # ShooterCore でターゲット方向射撃
     ├── Enemy/States/
-    │   ├── EnemyStateMachine.cs   # EnemyState abstract + EnemyStateMachine を同居
-    │   ├── EnemyIdleState.cs
-    │   ├── EnemyPatrolState.cs
-    │   ├── EnemyChaseState.cs
-    │   ├── EnemyAttackState.cs
-    │   └── EnemyDeadState.cs
+    │   └── EnemyStateMachine.cs   # EnemyStateMachine + 各 EnemyState 実装
     ├── Enemy/Spawn/
     │   ├── EnemySpawnPoint.cs         # 出現地点（groupId, Gizmo）
-    │   ├── SpawnContext.cs            # 実行時入力（waveIndex, difficulty, useSeed, seed）
-    │   ├── EnemySpawnEntry.cs         # 時間差付き出現エントリ
-    │   ├── EnemySpawnPattern.cs       # ScriptableObject（エントリ列）
+    │   ├── EnemySpawnPattern.cs       # ScriptableObject（エントリ列）+ Entry/Candidate
     │   ├── EnemySpawnPatternSet.cs    # ScriptableObject（パターン候補）
     │   └── EnemySpawnPatternRunner.cs # パターン実行器
     └── Diagnostics/
@@ -117,5 +110,5 @@ EnemyFactory ──► EnemyData ──► EnemyController
 | `Health.cs` | `DamageContext`（struct）、`IDamageable`（interface）、`Health`（MonoBehaviour） |
 | `BulletData.cs` | `BulletData`（ScriptableObject）、`BulletConfig`（readonly struct） |
 | `BulletPool.cs` | `IBulletPool`（interface）、`BulletPool`（MonoBehaviour） |
-| `EnemyStateMachine.cs` | `EnemyState`（abstract class）、`EnemyStateMachine`（class） |
+| `EnemyStateMachine.cs` | `EnemyState`（abstract class）、`EnemyStateMachine`、各 `EnemyState` 実装 |
 | `TeamAffiliation.cs` | `TeamId`（enum）、`TeamAffiliation`（MonoBehaviour） |

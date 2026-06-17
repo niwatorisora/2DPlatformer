@@ -532,8 +532,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPatternRunner
   patternSet: {fileID: 11400000, guid: 4d793c1021e8f8e6fbdb8cb318bbe13c, type: 2}
   enemyFactory: {fileID: 3141592003}
-  playOnStart: 0
-  debugWaveIndex: 0
+  playOnStart: 1
+  debugWaveIndex: 1
   debugDifficulty: 1
   debugUseSeed: 0
   debugSeed: 0
@@ -866,7 +866,7 @@ MonoBehaviour:
   shootOrigin: {fileID: 1158802514}
   spawnDistanceFromOrigin: 0.6
   targetCamera: {fileID: 519420031}
-  weaponData: {fileID: 11400000, guid: 21ece94e2437d9d998d59a77f28df279, type: 2}
+  weaponData: {fileID: 11400000, guid: 6e6a9346d6ebf1bb8804d2283f5325df, type: 2}
 --- !u!114 &1158802519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2361,7 +2361,7 @@ MonoBehaviour:
   bulletPool: {fileID: 372779691}
   playerTarget: {fileID: 1158802514}
   debugEnemyData: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
-  spawnOnStart: 1
+  spawnOnStart: 0
   spawnOffset: {x: 0, y: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

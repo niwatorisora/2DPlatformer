@@ -17,8 +17,8 @@ MonoBehaviour:
   - delay: 0
     groupIdList:
     - default
-    pointCount: 0
-    baseCount: 4
+    pointCount: 2
+    baseCount: 2
     difficultyBonusPerLevel: 0
     countMultiplierCurve:
       serializedVersion: 2

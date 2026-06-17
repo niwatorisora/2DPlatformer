@@ -105,7 +105,7 @@ abstract void TryAttack(Transform target);
 
 ## ステートマシン
 
-`EnemyStateMachine` と `EnemyState`（abstract）は `EnemyStateMachine.cs` に同居しています。State は MonoBehaviour ではなく、`EnemyController.Initialize` のタイミングで `new` されます。
+`EnemyStateMachine`、`EnemyState`（abstract）、各 State 実装は `EnemyStateMachine.cs` に同居しています。State は MonoBehaviour ではなく、`EnemyController.Initialize` のタイミングで `new` されます。
 
 ```csharp
 // EnemyState の基本構造

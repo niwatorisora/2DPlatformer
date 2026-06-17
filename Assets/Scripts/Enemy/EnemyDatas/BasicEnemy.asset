@@ -16,8 +16,8 @@ MonoBehaviour:
   teamId: 2
   maxHp: 100
   moveSpeed: 3
-  detectionRange: 6
-  loseSightRange: 8
+  detectionRange: 8
+  loseSightRange: 10
   attackRange: 4
-  patrolEnabled: 0
+  patrolEnabled: 1
   patrolDistance: 3

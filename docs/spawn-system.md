@@ -7,9 +7,9 @@ Factory パターンの上に重ねる再利用可能なスポーン実行層。
 | 型 | 種別 | ファイル |
 |----|------|---------|
 | `EnemySpawnPoint` | MonoBehaviour | `EnemySpawnPoint.cs` |
-| `SpawnContext` | struct | `SpawnContext.cs` |
-| `EnemyCandidate` | struct | `EnemySpawnEntry.cs` |
-| `EnemySpawnEntry` | class (Serializable) | `EnemySpawnEntry.cs` |
+| `SpawnContext` | struct | `EnemySpawnPatternRunner.cs` |
+| `EnemyCandidate` | struct | `EnemySpawnPattern.cs` |
+| `EnemySpawnEntry` | class (Serializable) | `EnemySpawnPattern.cs` |
 | `EnemySpawnPattern` | ScriptableObject | `EnemySpawnPattern.cs` |
 | `EnemySpawnPatternSet` | ScriptableObject | `EnemySpawnPatternSet.cs` |
 | `EnemySpawnPatternRunner` | MonoBehaviour | `EnemySpawnPatternRunner.cs` |
