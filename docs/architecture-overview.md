@@ -11,6 +11,8 @@ Assets/
 │   ├── SampleScene.unity      # 最小プロトタイプ
 │   └── MainScene1.unity       # ゲームプレイ検証（マガジン HUD 等）
 └── Scripts/
+    ├── Character/
+    │   └── CharacterVisualController.cs # 見た目回転固定 + 水平フリップ（VisualRoot を制御）
     ├── Player/
     │   ├── PlayerMovement.cs  # 左右移動・ジャンプ
     │   └── PlayerShooter.cs   # マウス照準射撃
@@ -20,7 +22,7 @@ Assets/
     │   ├── BulletDatas/
     │   │   └── BulletData.cs  # BulletData SO + BulletConfig struct（+ ShotgunBullet.asset 等）
     │   ├── WeaponDatas/
-    │   │   └── WeaponData.cs  # WeaponData SO（発射パラメータ + マガジン設定 + 表示名 displayName）
+    │   │   └── WeaponData.cs  # WeaponData SO（発射パラメータ + マガジン設定 + displayName + weaponSprite）
     │   └── Shooting/
     │       ├── BulletPool.cs  # IBulletPool interface + BulletPool
     │       ├── Bullet.cs      # 弾の移動・衝突・ダメージ・プール返却
@@ -54,7 +56,7 @@ Assets/
     │   └── ScoreManager.cs        # スコア集計（EnemyController.OnEnemyKilled 購読 → OnScoreChanged）
     └── UI/
         ├── HpBarUI.cs             # ワールド空間 HP バー（Health.OnDamaged 購読）
-        ├── AmmoHudView.cs         # 残弾 {マガジン}/{予備} + 武器名（Magazine 購読）
+        ├── AmmoHudView.cs         # 残弾 {マガジン}/{予備} + 武器名 + 武器アイコン（Magazine 購読）
         └── ScoreHudView.cs        # スコア表示（ScoreManager 購読）
 ```
 

@@ -48,8 +48,9 @@ Assets/
 1. `Assets/Scripts/Combat/WeaponDatas/` を右クリック → `Create → Combat → Weapon Data`
 2. 名前を `<武器名>.asset` に設定（例: `SniperRifle.asset`）
 3. Inspector で `bulletData` を参照し、cooldown / simultaneous / spread / sequence / interval / magazine 系フィールドを設定
-4. プレイヤーに弾数制限を付ける場合: プレイヤー GameObject に `Magazine` を追加し、`PlayerShooter` の **Weapon Data** と同じ `WeaponData` を参照させる（`Awake` で自動 `Configure`）
-5. `PlayerShooter` または `EnemyShooterAttack` Prefab の **Weapon Data** フィールドに参照をセット
+4. **武器スプライトを設定したい場合**: `weaponSprite` フィールドに Sprite アセットを割り当てる（`AmmoHudView` の `weaponIconImage` に Image コンポーネントを参照させると HUD に反映される）
+5. プレイヤーに弾数制限を付ける場合: プレイヤー GameObject に `Magazine` を追加し、`PlayerShooter` の **Weapon Data** と同じ `WeaponData` を参照させる（`Awake` で自動 `Configure`）
+6. `PlayerShooter` または `EnemyShooterAttack` Prefab の **Weapon Data** フィールドに参照をセット
 
 **パラメータ設計の指針:**
 
@@ -60,6 +61,45 @@ Assets/
 | バーストライフル | 1 | 0 | 3 | 0.6 |
 | マシンガン | 1 | 1–3 | 1 | 0.1 |
 
+## キャラクターのスプライト設定（プレイヤー・敵共通）
+
+### Prefab 構成（VisualRoot パターン）
+
+プレイヤー/敵の見た目はルートではなく子オブジェクト `VisualRoot` で管理します。物理演算（Rigidbody2D）がルートを回転させても、`CharacterVisualController` が `VisualRoot` のワールド回転を毎フレーム正立に戻すため、スプライトが転がることはありません。
+
+```
+キャラクタールート （Rigidbody2D, Collider2D, CharacterVisualController）
+└── VisualRoot  （SpriteRenderer を配置する）
+```
+
+`CharacterVisualController` のフィールド:
+
+| フィールド | 説明 |
+|-----------|------|
+| `visualRoot` | SpriteRenderer を持つ子 Transform（`VisualRoot`）を割り当てる |
+| `flipSpeedThreshold` | フリップ判定の最低速度（停止中に向きが揺れるのを防ぐ） |
+| `defaultFacingRight` | スプライトのデフォルト向き（右向きなら `true`） |
+
+### スプライト差し替え手順（敵 Prefab）
+
+1. Unity で `BasicEnemy.prefab` などを開く
+2. 子オブジェクト `VisualRoot` を選択し、`SpriteRenderer.sprite` に画像をドラッグ
+3. 当たり判定（`BoxCollider2D`）はルートにあるため **スプライト変更とは独立**。Inspector で手動調整できる
+
+### スプライト差し替え手順（プレイヤー、シーンオブジェクト）
+
+シーン内のプレイヤーには `VisualRoot` 子オブジェクトが未作成の場合は手動で設定する:
+
+1. プレイヤー GameObject の直下に空の子 `VisualRoot` を作成
+2. プレイヤーの `SpriteRenderer` を `VisualRoot` に移動（ドラッグ・アンド・ドロップ）
+3. プレイヤールートに `CharacterVisualController` を追加し、`visualRoot` に `VisualRoot` を設定
+
+### 当たり判定と見た目のずれ
+
+- `BoxCollider2D` はルートに残し、スプライトとは別に手動サイズ調整する
+- スプライトの見た目に完全一致させる必要はない（適度な余裕がゲームプレイを自然にする）
+- スプライトが Collider より大きい/小さい場合は Collider の `Size` / `Offset` で調整する
+
 ## 新しい敵種の追加（コード変更不要）
 
 1. **Prefab を作成** — 既存 Enemy Prefab を複製するか新規作成
@@ -67,6 +107,7 @@ Assets/
    - 必須コンポーネント: `EnemyShooterAttack` など、`EnemyAttack` 実装のいずれか
    - Runtime wiring: `EnemyController`, `EnemySensor`, `Health`, `TeamAffiliation` は Factory/Controller が不足時に追加する
    - 任意コンポーネント: `CombatDamageLog`
+   - **見た目**: ルート直下に `VisualRoot` 子を作り `SpriteRenderer` を置く。ルートに `CharacterVisualController` を追加して `visualRoot` を設定する
      - `EnemyShooterAttack` を使う場合は **Weapon Data** フィールドに `WeaponData` アセットをセットする
 2. **EnemyData を作成** — `Assets/Scripts/Enemy/EnemyDatas/` を右クリック → `Create → Combat → Enemy Data`
    - 名前は `<種別>EnemyData.asset`（例: `FlyingEnemyData.asset`）

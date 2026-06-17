@@ -29,6 +29,8 @@ Documentation index and detailed notes:
 
 ## Architecture
 
+- `Assets/Scripts/Character`
+  - `CharacterVisualController`: locks `VisualRoot` child rotation to world identity each `LateUpdate`; flips `SpriteRenderer` based on `Rigidbody2D` horizontal velocity. Place on the physics root; assign the `VisualRoot` child in Inspector.
 - `Assets/Scripts/Player`
   - `PlayerMovement`: horizontal movement and jump.
   - `PlayerShooter`: mouse aiming, cooldown, spread, burst/sequence firing via `ShooterCore`; optional `Magazine` on same GameObject; `R` triggers manual reload.
@@ -38,7 +40,7 @@ Documentation index and detailed notes:
 - `Assets/Scripts/Combat/BulletDatas`
   - `BulletData.cs` contains `BulletData` (SO) and `BulletConfig` (readonly struct snapshot).
 - `Assets/Scripts/Combat/WeaponDatas`
-  - `WeaponData`: firing behavior — cooldown, simultaneous shot count, spread, sequence count, interval, plus magazine settings (`magazineSize`, `reloadTime`, `startingReserveAmmo`, `infiniteReserve`, `autoReloadWhenEmpty`) and `displayName`.
+  - `WeaponData`: firing behavior — cooldown, simultaneous shot count, spread, sequence count, interval, plus magazine settings (`magazineSize`, `reloadTime`, `startingReserveAmmo`, `infiniteReserve`, `autoReloadWhenEmpty`), `displayName`, and `weaponSprite` (for HUD icon).
 - `Assets/Scripts/Combat/Shooting`
   - `BulletPool.cs` contains `IBulletPool` (interface) and `BulletPool` (MonoBehaviour, `ObjectPool<Bullet>`).
   - `Bullet`: runtime movement, lifetime, collision, team checks, and damage application.
@@ -105,6 +107,8 @@ Useful validation:
   - Firing behavior belongs in `WeaponData`.
 - Magazine ammo **settings** live on `WeaponData`; runtime ammo **state** lives on `Magazine`. One salvo consumes one round (spread pellets do not multiply consumption).
 - `ScoreManager` must be a single instance per scene to avoid duplicate scoring.
+- Character visuals (sprites) live on a `VisualRoot` child object, not on the physics root. `CharacterVisualController` on the root keeps `VisualRoot.rotation` at world identity each frame so physics rotation never tilts the sprite. `BoxCollider2D` stays on the root and is adjusted independently of the sprite.
+- `WeaponData.weaponSprite` holds the weapon icon for HUD use. It is a UI/visual concern and has no effect on gameplay.
 - Do not reintroduce per-fire-mode strategy classes for single/shotgun/burst unless the generic `simultaneousShotCount + spreadAngle + sequenceShotCount + sequenceInterval` model is no longer sufficient.
 - Enemy authoring source of truth:
   - Shared values such as team, HP, movement speed, detection range, attack range, and patrol settings belong in `EnemyData`.
