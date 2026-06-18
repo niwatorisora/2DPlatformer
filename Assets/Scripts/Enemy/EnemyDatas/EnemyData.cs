@@ -29,6 +29,13 @@ public class EnemyData : ScriptableObject
     public bool patrolEnabled = false;
     public float patrolDistance = 3f;
 
+    [Header("Score")]
+    public int scoreValue = 100;
+
+    [Header("Audio")]
+    // 撃破時に再生。未設定なら無音（後方互換）。
+    public SoundData deathSound;
+
     void OnValidate()
     {
         maxHp = Mathf.Max(1, maxHp);
@@ -37,5 +44,6 @@ public class EnemyData : ScriptableObject
         loseSightRange = Mathf.Max(detectionRange, loseSightRange);
         attackRange = Mathf.Max(0f, attackRange);
         patrolDistance = Mathf.Max(0f, patrolDistance);
+        scoreValue = Mathf.Max(0, scoreValue);
     }
 }

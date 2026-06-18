@@ -13,6 +13,7 @@ public class PlayerShooter : MonoBehaviour
     Coroutine fireSequence;
     TeamAffiliation teamAffiliation;
     float nextFireTime;
+    Magazine magazine;
 
     void Awake()
     {
@@ -20,6 +21,9 @@ public class PlayerShooter : MonoBehaviour
         if (targetCamera == null) targetCamera = Camera.main;
         // TeamAffiliation is optional, but Neutral shooters do not get friendly-fire protection.
         teamAffiliation = GetComponentInParent<TeamAffiliation>();
+
+        magazine = GetComponent<Magazine>();
+        if (magazine != null && weaponData != null) magazine.Configure(weaponData);
     }
 
     void Update()
@@ -28,6 +32,8 @@ public class PlayerShooter : MonoBehaviour
             ? Input.GetMouseButton(0)
             : Input.GetMouseButtonDown(0);
         if (triggered) ShootAtMouse();
+
+        if (Input.GetKeyDown(KeyCode.R)) magazine?.StartReload();
     }
 
     void ShootAtMouse()
@@ -58,6 +64,8 @@ public class PlayerShooter : MonoBehaviour
             return;
         }
 
+        if (magazine != null && !magazine.CanFire) return;
+
         Vector2 shootDirection = GetDirectionToMouse();
         if (shootDirection.sqrMagnitude <= Mathf.Epsilon) return;
 
@@ -81,14 +89,20 @@ public class PlayerShooter : MonoBehaviour
         if (direction.sqrMagnitude <= Mathf.Epsilon) return;
         if (fireSequence != null) return;
 
-        var config    = BulletConfig.From(weaponData.bulletData);
-        direction     = direction.normalized;
-        nextFireTime  = Time.time + weaponData.cooldown;
+        var config = BulletConfig.From(weaponData.bulletData);
+        direction = direction.normalized;
+        nextFireTime = Time.time + weaponData.cooldown;
 
         // All spread shots fire from the same pre-calculated spawn point.
-        void Salvo() => ShooterCore.FireSpread(
-            direction, config, weaponData, bulletPool, gameObject, GetTeamId(),
-            _ => shootPosition);
+        // 1サルボにつき1発消費。弾が無ければそのサルボはスキップする。
+        void Salvo()
+        {
+            if (magazine != null && !magazine.TryConsume(1)) return;
+            ShooterCore.FireSpread(
+                direction, config, weaponData, bulletPool, gameObject, GetTeamId(),
+                _ => shootPosition);
+            AudioHelper.TryPlay(weaponData.fireSound);
+        }
 
         if (weaponData.sequenceShotCount <= 1 || weaponData.sequenceInterval <= 0f)
         {

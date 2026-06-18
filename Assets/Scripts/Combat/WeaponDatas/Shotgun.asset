@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fedec895ce8cae61ba65ca5a74aaecb, type: 3}
   m_Name: Shotgun
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  displayName: Shotgun
   bulletData: {fileID: 11400000, guid: d3c8536951974b249ab69ccb130252e8, type: 2}
+  autoFire: 0
   cooldown: 0.2
   simultaneousShotCount: 8
   spreadAngle: 10
   sequenceShotCount: 1
   sequenceInterval: 0.1
+  magazineSize: 8
+  reloadTime: 3
+  startingReserveAmmo: 120
+  infiniteReserve: 0
+  autoReloadWhenEmpty: 1

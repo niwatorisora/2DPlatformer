@@ -21,3 +21,4 @@ MonoBehaviour:
   attackRange: 4
   patrolEnabled: 1
   patrolDistance: 3
+  scoreValue: 50

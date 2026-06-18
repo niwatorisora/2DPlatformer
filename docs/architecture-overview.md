@@ -49,6 +49,16 @@ Assets/
     │   ├── EnemySpawnPattern.cs       # ScriptableObject（エントリ列）+ Entry/Candidate
     │   ├── EnemySpawnPatternSet.cs    # ScriptableObject（パターン候補）
     │   └── EnemySpawnPatternRunner.cs # パターン実行器
+    ├── Audio/
+    │   ├── SoundCategory.cs       # Master / Sfx / Bgm / Ambient enum
+    │   ├── SoundData.cs           # 音声定義 SO（clip / category / volume / pitch / cooldown 等）
+    │   ├── IAudioService.cs       # 再生・停止・音量 API の interface
+    │   ├── AudioManager.cs        # IAudioService 実装体（ObjectPool / PlayerPrefs / イベント）
+    │   ├── SfxPlayer.cs           # ObjectPool<AudioSource> によるワンショット再生
+    │   ├── MusicPlayer.cs         # BGM 2 トラッククロスフェード
+    │   ├── AmbientPlayer.cs       # 環境音 2 トラッククロスフェード
+    │   ├── SoundCooldownTracker.cs# cooldown / polyphony でスパム抑制
+    │   └── AudioHelper.cs         # static 薄ラッパー（FindFirstObjectByType キャッシュ）
     ├── Diagnostics/
     │   ├── GameLog.cs             # [Level:ClassName] 形式のコンソールログ
     │   └── CombatDamageLog.cs     # 被ダメ・死亡をコンソール出力
@@ -128,6 +138,15 @@ EnemyController ──► EnemyStateMachine ──► EnemyState 各実装
                  ──► EnemyAttack（EnemyShooterAttack）
                  ──► OnEnemyKilled ──► ScoreManager ──► ScoreHudView
 EnemyFactory ──► EnemyData ──► EnemyController
+
+AudioHelper ──► AudioManager（IAudioService）
+                 ├─► SfxPlayer（ObjectPool<AudioSource>）
+                 ├─► MusicPlayer（2 トラッククロスフェード）
+                 ├─► AmbientPlayer（2 トラッククロスフェード）
+                 └─► SoundCooldownTracker（cooldown / polyphony）
+PlayerShooter ──► AudioHelper.TryPlay(WeaponData.fireSound)
+Magazine      ──► AudioHelper.TryPlay(WeaponData.reloadSound)
+EnemyController ► AudioHelper.TryPlay(EnemyData.deathSound)
 ```
 
 ## 各ファイルに含まれる型

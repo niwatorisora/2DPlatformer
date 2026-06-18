@@ -77,6 +77,16 @@ Documentation index and detailed notes:
   - `HpBarUI`: world-space HP bar (`Health.OnDamaged`).
   - `AmmoHudView`: screen-space ammo HUD (`Magazine.OnAmmoChanged`, shows `{magazine} / {reserve}` and `WeaponData.displayName`).
   - `ScoreHudView`: screen-space score HUD (`ScoreManager.OnScoreChanged`).
+- `Assets/Scripts/Audio`
+  - `SoundCategory`: `Master / Sfx / Bgm / Ambient` enum for volume channels.
+  - `SoundData`: ScriptableObject for one sound — clip, category, volume, pitch range, spatial blend, loop, cooldown, polyphony limit.
+  - `IAudioService`: interface for the full audio API (volume, mute, play, pause, events).
+  - `AudioManager`: sole `IAudioService` implementation per scene. Owns `SfxPlayer`, `MusicPlayer`, `AmbientPlayer`, `SoundCooldownTracker`; loads/saves settings via PlayerPrefs.
+  - `SfxPlayer`: `ObjectPool<AudioSource>` one-shot SFX player; auto-returns sources on playback end via `Tick()`.
+  - `MusicPlayer`: two-track BGM player with crossfade coroutine.
+  - `AmbientPlayer`: two-track ambient player with crossfade coroutine.
+  - `SoundCooldownTracker`: per-`SoundData` cooldown timer and polyphony counter.
+  - `AudioHelper`: static null-safe wrapper; caches `FindFirstObjectByType<AudioManager>()`; gameplay callers use `AudioHelper.TryPlay(sound)`.
 
 Core data flow:
 1. A shooter (`PlayerShooter` / `EnemyShooterAttack`) reads `WeaponData`.
@@ -87,6 +97,7 @@ Core data flow:
 6. `BulletPool` launches pooled `Bullet` instances.
 7. `Bullet` uses `hitMask` and owner/team checks, then calls `IDamageable.TakeDamage` on `Health`.
 8. On enemy death: `EnemyController.OnEnemyKilled(scoreValue)` → `ScoreManager.AddScore` → `ScoreHudView`.
+9. Sound playback: `AudioHelper.TryPlay(SoundData)` → `AudioManager.TryPlay` → `SfxPlayer` (via `ObjectPool<AudioSource>`); `SoundCooldownTracker` enforces cooldown and polyphony limits.  BGM/ambient use `AudioManager.PlayBgm` / `PlayAmbient` with crossfade.
 
 ## Development Setup
 
@@ -107,6 +118,9 @@ Useful validation:
   - Firing behavior belongs in `WeaponData`.
 - Magazine ammo **settings** live on `WeaponData`; runtime ammo **state** lives on `Magazine`. One salvo consumes one round (spread pellets do not multiply consumption).
 - `ScoreManager` must be a single instance per scene to avoid duplicate scoring.
+- `AudioManager` must be a single instance per scene. Place it as the `AudioManager` GameObject in `MainScene1.unity`. Use `AudioHelper.TryPlay(sound)` from gameplay code — do not call `FindFirstObjectByType<AudioManager>()` directly.
+- Sound **settings** (clip, volume, pitch, cooldown) live on `SoundData` (ScriptableObject); runtime state (active AudioSources, cooldown timers) lives in `AudioManager` and its sub-players.
+- `WeaponData.fireSound` / `reloadSound` and `EnemyData.deathSound` are optional. Leave them null for silent behavior without breaking existing gameplay.
 - Character visuals (sprites) live on a `VisualRoot` child object, not on the physics root. `CharacterVisualController` on the root keeps `VisualRoot.rotation` at world identity each frame so physics rotation never tilts the sprite. `BoxCollider2D` stays on the root and is adjusted independently of the sprite.
 - `WeaponData.weaponSprite` holds the weapon icon for HUD use. It is a UI/visual concern and has no effect on gameplay.
 - Do not reintroduce per-fire-mode strategy classes for single/shotgun/burst unless the generic `simultaneousShotCount + spreadAngle + sequenceShotCount + sequenceInterval` model is no longer sufficient.

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -8,6 +9,9 @@ using UnityEngine;
 /// </summary>
 public class EnemyController : MonoBehaviour
 {
+    /// <summary>倒された時に発火。引数は獲得スコア。ScoreManager が購読する。</summary>
+    public static event Action<int> OnEnemyKilled;
+
     // --- Component references resolved in Awake ---
     public EnemyMovement Movement  { get; private set; }
     public EnemyAttack   Attack    { get; private set; }
@@ -129,6 +133,8 @@ public class EnemyController : MonoBehaviour
 
     void OnDied()
     {
+        OnEnemyKilled?.Invoke(Data != null ? Data.scoreValue : 0);
+        AudioHelper.TryPlay(Data != null ? Data.deathSound : null);
         ChangeState(DeadState);
     }
 

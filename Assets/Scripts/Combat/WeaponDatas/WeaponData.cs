@@ -29,6 +29,12 @@ public class WeaponData : ScriptableObject
     public bool infiniteReserve = false;   // trueなら予備弾無限（マガジン容量だけは有限）
     public bool autoReloadWhenEmpty = true;// マガジンが空になったら自動でリロード開始
 
+    [Header("Audio")]
+    // 射撃サルボ成功時に再生。未設定なら無音（後方互換）。
+    public SoundData fireSound;
+    // リロード開始時に再生。未設定なら無音。
+    public SoundData reloadSound;
+
     void OnValidate()
     {
         cooldown = Mathf.Max(0f, cooldown);
