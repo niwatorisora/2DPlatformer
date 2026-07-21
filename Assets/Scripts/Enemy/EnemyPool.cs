@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EnemyFactory が所有する敵インスタンスのプール。
+/// WaveSpawner が所有する敵インスタンスのプール。
 /// Prefab ごとに分けるため、異なる移動・攻撃コンポーネントを安全に再利用できる。
 /// </summary>
 public class EnemyPool
@@ -53,14 +53,6 @@ public class EnemyPool
         enemy.gameObject.SetActive(false);
         returnedInstances.Add(enemy);
         queue.Enqueue(enemy);
-    }
-
-    public void Return(GameObject prefab, EnemyController enemy)
-    {
-        if (enemy != null && !prefabByInstance.ContainsKey(enemy) && prefab != null)
-            prefabByInstance.Add(enemy, prefab);
-
-        Return(enemy);
     }
 
     EnemyController TakeAvailable(GameObject prefab)

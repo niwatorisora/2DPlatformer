@@ -14,10 +14,13 @@ public class Bullet : MonoBehaviour
     int hitMask;
     GameObject owner;
     TeamId ownerTeam;
+    Collider2D bulletCollider;
+    readonly List<Collider2D> overlapResults = new(8);
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        bulletCollider = GetComponent<Collider2D>();
         // BulletData decides whether gravity is enabled when the bullet is launched.
         rb.gravityScale = 0f;
     }
@@ -52,8 +55,7 @@ public class Bullet : MonoBehaviour
     {
         if (isReleased) return;
 
-        Collider2D col = GetComponent<Collider2D>();
-        if (col == null) return;
+        if (bulletCollider == null) return;
 
         var filter = new ContactFilter2D
         {
@@ -62,11 +64,11 @@ public class Bullet : MonoBehaviour
             layerMask = (LayerMask)hitMask
         };
 
-        var overlaps = new List<Collider2D>(8);
-        int count = col.Overlap(filter, overlaps);
+        overlapResults.Clear();
+        int count = bulletCollider.Overlap(filter, overlapResults);
         for (int i = 0; i < count; i++)
         {
-            ProcessHit(overlaps[i]);
+            ProcessHit(overlapResults[i]);
             if (isReleased) break;
         }
     }

@@ -37,7 +37,7 @@ public interface IDamageable
 [RequireComponent(typeof(TeamAffiliation))]
 public class Health : MonoBehaviour, IDamageable
 {
-    [Tooltip("Initial HP for manually placed actors. Enemies spawned by EnemyFactory use EnemyData.maxHp instead.")]
+    [Tooltip("Initial HP for manually placed actors. Enemies spawned by WaveSpawner use EnemyData.maxHp instead.")]
     [SerializeField] int maxHp = 100;
     [SerializeField] bool isInvulnerable;
 
@@ -64,7 +64,7 @@ public class Health : MonoBehaviour, IDamageable
 
     /// <summary>
     /// Sets max HP and resets current HP to the new value.
-    /// Call this from EnemyFactory or other spawners that drive HP from EnemyData.
+    /// Call this from WaveSpawner or other spawners that drive HP from EnemyData.
     /// Manual scene-placed actors can rely on the Inspector value and skip this call.
     /// </summary>
     public void Initialize(int newMaxHp)

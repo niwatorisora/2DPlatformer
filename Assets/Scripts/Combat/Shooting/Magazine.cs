@@ -12,7 +12,7 @@ using UnityEngine;
 /// </summary>
 public class Magazine : MonoBehaviour
 {
-    // HUD など外部はこれらのイベントを購読して表示を更新する（今回は未使用）。
+    // AmmoHudView など外部はこれらのイベントを購読して表示を更新する。
     public event Action OnAmmoChanged;
     public event Action OnReloadStarted;
     public event Action OnReloadCompleted;

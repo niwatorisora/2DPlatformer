@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// ゲーム全体のスコアを集計する。EnemyFactory から注入された敵撃破通知を受け取り、
+/// ゲーム全体のスコアを集計する。WaveSpawner から注入された敵撃破通知を受け取り、
 /// 倒された敵の獲得点を加算する。表示側(HUD)は OnScoreChanged を購読する。
 /// </summary>
 public class ScoreManager : MonoBehaviour, IEnemyKillListener

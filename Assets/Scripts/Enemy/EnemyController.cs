@@ -124,7 +124,7 @@ public class EnemyController : MonoBehaviour
         ChangeState(DeadState);
     }
 
-    // 静的イベントではなく、EnemyFactory から受け取った通知先だけに知らせる。
+    // 静的イベントではなく、WaveSpawner から受け取った通知先だけに知らせる。
     void NotifyKillListeners(int scoreValue)
     {
         if (killListeners == null) return;
