@@ -6,92 +6,47 @@ using UnityEngine.UI;
 /// Factory-spawned enemies may receive Health after child OnEnable runs, so binding is retried.
 /// </summary>
 [RequireComponent(typeof(Canvas))]
-public class HpBarUI : MonoBehaviour
+public class HpBarUI : EventBoundView<Health>
 {
     [SerializeField] Image fill;
 
-    Health health;
-    bool subscribed;
-    bool loggedMissingFill;
-
     void Awake()
     {
-        CacheFill();
-        TryFindHealth();
-    }
+        if (fill != null) return;
 
-    void OnEnable()
-    {
-        TrySubscribe(false);
-    }
+        fill = transform.Find("Fill")?.GetComponent<Image>();
+        if (fill != null) return;
 
-    void Start()
-    {
-        TrySubscribe(true);
-    }
-
-    void LateUpdate()
-    {
-        if (!subscribed)
-            TrySubscribe(false);
-    }
-
-    void OnDisable()
-    {
-        if (!subscribed || health == null) return;
-
-        health.OnDamaged -= OnDamaged;
-        subscribed = false;
+        Debug.LogError("[HpBarUI] Fill Image not found. Assign it in the Inspector or name the child 'Fill'.", this);
+        enabled = false;
     }
 
     void OnDamaged(int _) => Refresh();
 
-    bool TrySubscribe(bool logMissingHealth)
+    protected override Health FindTarget()
     {
-        if (subscribed) return true;
+        return GetComponentInParent<Health>();
+    }
 
-        CacheFill();
-        TryFindHealth();
-
-        if (health == null)
-        {
-            if (logMissingHealth)
-                Debug.LogError("[HpBarUI] Health not found in parent hierarchy.", this);
-            return false;
-        }
-
-        if (fill == null)
-        {
-            if (!loggedMissingFill)
-            {
-                Debug.LogError("[HpBarUI] Fill Image not found. Assign it in the Inspector or name the child 'Fill'.", this);
-                loggedMissingFill = true;
-            }
-            return false;
-        }
-
+    protected override void Subscribe(Health health)
+    {
         health.OnDamaged += OnDamaged;
-        subscribed = true;
+    }
+
+    protected override void Unsubscribe(Health health)
+    {
+        health.OnDamaged -= OnDamaged;
+    }
+
+    protected override void OnTargetBound(Health health)
+    {
         Refresh();
-        return true;
-    }
-
-    void TryFindHealth()
-    {
-        if (health == null)
-            health = GetComponentInParent<Health>();
-    }
-
-    void CacheFill()
-    {
-        if (fill == null)
-            fill = transform.Find("Fill")?.GetComponent<Image>();
     }
 
     void Refresh()
     {
-        if (health == null || fill == null) return;
+        if (Target == null || fill == null) return;
 
-        fill.fillAmount = (float)health.CurrentHp / health.MaxHp;
+        fill.fillAmount = (float)Target.CurrentHp / Target.MaxHp;
     }
 }

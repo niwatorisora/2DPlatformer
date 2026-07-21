@@ -2,25 +2,16 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// ゲーム全体のスコアを集計する。EnemyController.OnEnemyKilled（静的イベント）を
-/// 購読し、倒された敵の獲得点を加算する。表示側(HUD)は OnScoreChanged を購読する。
-/// シーンに1つだけ配置すること（複数あると多重加算になる）。
+/// ゲーム全体のスコアを集計する。EnemyFactory から注入された敵撃破通知を受け取り、
+/// 倒された敵の獲得点を加算する。表示側(HUD)は OnScoreChanged を購読する。
 /// </summary>
-public class ScoreManager : MonoBehaviour
+public class ScoreManager : MonoBehaviour, IEnemyKillListener
 {
     public event Action OnScoreChanged;
 
     public int Score { get; private set; }
 
-    void OnEnable()
-    {
-        EnemyController.OnEnemyKilled += AddScore;
-    }
-
-    void OnDisable()
-    {
-        EnemyController.OnEnemyKilled -= AddScore;
-    }
+    public void OnEnemyKilled(int scoreValue) => AddScore(scoreValue);
 
     /// <summary>スコアを加算する。0以下は無視。</summary>
     public void AddScore(int amount)

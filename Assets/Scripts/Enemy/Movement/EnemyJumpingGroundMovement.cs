@@ -34,6 +34,13 @@ public class EnemyJumpingGroundMovement : EnemyGroundMovement
             GameLog.Warning(this, "groundCheck is not assigned; jump will be disabled.");
     }
 
+    public override void Configure(float speed)
+    {
+        base.Configure(speed);
+        // プール再利用時に前回のジャンプクールダウンを持ち越さない。
+        nextJumpTime = 0f;
+    }
+
     public override void MoveToward(Vector2 worldPosition)
     {
         base.MoveToward(worldPosition);
