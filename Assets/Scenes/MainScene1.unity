@@ -503,8 +503,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67316c58910d019c8e2bab20f9c999d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraViewportFitter
-  minVisibleWidth: 16
-  minVisibleHeight: 9
+  targetAspect: {x: 16, y: 9}
+  visibleWorldHeight: 16
 --- !u!1 &613355549
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,6 +521,7 @@ GameObject:
   - component: {fileID: 613355552}
   - component: {fileID: 613355551}
   - component: {fileID: 613355550}
+  - component: {fileID: 613355558}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -570,7 +571,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 613355549}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5492a1d66ab49adb9f25d0cca209d06, type: 3}
   m_Name: 
@@ -669,6 +670,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &613355558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613355549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc125c32f4fd4ebde9dfdc3db8033ab9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
+  waveTable: {fileID: 11400000, guid: 886772a6f724311fc8d8de1f6187bb4c, type: 2}
+  spawnPoints:
+  - {fileID: 1637720540}
+  - {fileID: 722605528}
+  playerTarget: {fileID: 1158802514}
+  bulletPool: {fileID: 613355550}
+  killListeners:
+  - {fileID: 613355555}
+  playOnStart: 1
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,7 +901,6 @@ MonoBehaviour:
   groupId: default
   radius: 1
   blockageMask:
-    serializedVersion: 2
     m_Bits: 0
 --- !u!1 &1061276390
 GameObject:
@@ -1116,7 +1137,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoxController
   moveSpeed: 5
-  jumpForce: 5
+  jumpVelocity: 5
+  jumpBufferTime: 0.1
+  coyoteTime: 0.1
   groundCheck: {fileID: 7705951}
   checkRadius: 0.2
   groundLayer:
@@ -1134,7 +1157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 784cb6eea5781050d8e5362497094ede, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
-  bulletPool: {fileID: 0}
+  bulletPool: {fileID: 613355550}
   shootOrigin: {fileID: 1158802514}
   spawnDistanceFromOrigin: 0.6
   targetCamera: {fileID: 519420031}
@@ -1390,7 +1413,6 @@ MonoBehaviour:
   groupId: default
   radius: 1
   blockageMask:
-    serializedVersion: 2
     m_Bits: 0
 --- !u!1 &1732235465
 GameObject:
@@ -1528,6 +1550,8 @@ GameObject:
   - component: {fileID: 2120586374}
   - component: {fileID: 2120586373}
   - component: {fileID: 2120586372}
+  - component: {fileID: 2120586376}
+  - component: {fileID: 2120586375}
   m_Layer: 6
   m_Name: Tilemap
   m_TagString: Untagged
@@ -1582,7 +1606,7 @@ TilemapCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_CompositeOperation: 0
+  m_CompositeOperation: 1
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
@@ -2830,6 +2854,104 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!66 &2120586375
+CompositeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120586370}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 158818d22a34b0fabb8066f67b312582, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_GeometryType: 1
+  m_GenerationType: 0
+  m_EdgeRadius: 0
+  m_ColliderPaths:
+  - m_Collider: {fileID: 2120586372}
+    m_ColliderPaths:
+    - - X: 240000000
+        Y: 170000000
+      - X: -130000000
+        Y: 170000000
+      - X: -130000000
+        Y: -40000000
+      - X: 240000000
+        Y: -40000000
+    - - X: -120000000
+        Y: -30000000
+      - X: -120000000
+        Y: 160000000
+      - X: 230000000
+        Y: 160000000
+      - X: 230000000
+        Y: -30000000
+  m_CompositePaths:
+    m_Paths:
+    - - {x: 23.999971, y: -4}
+      - {x: 23.999971, y: 17}
+      - {x: -13, y: 16.999971}
+      - {x: -12.99997, y: -4}
+    - - {x: 23, y: -2.9999707}
+      - {x: -12, y: -2.9999707}
+      - {x: -11.99997, y: 16}
+      - {x: 23, y: 15.999971}
+  m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.00005
+  m_UseDelaunayMesh: 0
+  m_CompositeGameObject: {fileID: 2120586370}
+--- !u!50 &2120586376
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120586370}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
