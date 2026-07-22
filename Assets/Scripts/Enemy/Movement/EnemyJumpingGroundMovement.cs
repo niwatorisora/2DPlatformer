@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class EnemyJumpingGroundMovement : EnemyGroundMovement
 {
+    static bool warnedAboutEmptyGroundLayer;
+
     [Header("Jump")]
     [SerializeField] float jumpVelocity = 6f;
     [Tooltip("接地中に追跡ジャンプを行う間隔（秒）。")]
@@ -20,6 +22,7 @@ public class EnemyJumpingGroundMovement : EnemyGroundMovement
     [SerializeField] LayerMask groundLayer;
 
     Rigidbody2D rb;
+    Collider2D mainCollider;
     float nextJumpTime;
     bool isMoveActive;
 
@@ -27,8 +30,7 @@ public class EnemyJumpingGroundMovement : EnemyGroundMovement
     {
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
-        if (groundCheck == null)
-            GameLog.Warning(this, "groundCheck is not assigned; jump will be disabled.");
+        mainCollider = GetComponent<Collider2D>();
     }
 
     public override void Configure(float speed)
@@ -78,8 +80,48 @@ public class EnemyJumpingGroundMovement : EnemyGroundMovement
 
     bool IsGrounded()
     {
-        if (groundCheck == null) return false;
-        return Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        LayerMask mask = ResolveGroundLayer();
+        if (mask.value == 0) return false;
+
+        Vector2 checkPosition = groundCheck != null
+            ? groundCheck.position
+            : GetColliderBottomWorld();
+        return Physics2D.OverlapCircle(checkPosition, checkRadius, mask);
+    }
+
+    LayerMask ResolveGroundLayer()
+    {
+        if (groundLayer.value != 0) return groundLayer;
+
+        int groundLayerIndex = LayerMask.NameToLayer("Ground");
+        if (!warnedAboutEmptyGroundLayer)
+        {
+            warnedAboutEmptyGroundLayer = true;
+            string fallback = groundLayerIndex >= 0
+                ? "暫定的に Ground レイヤーを使用します。"
+                : "Ground レイヤーが存在しないため接地判定できません。";
+            GameLog.Warning(this,
+                $"EnemyJumpingGroundMovement のPrefabフィールド「Ground Layer」が Nothing です。Ground を設定してください。{fallback}");
+        }
+
+        return groundLayerIndex >= 0 ? LayerMask.GetMask("Ground") : (LayerMask)0;
+    }
+
+    Vector2 GetColliderBottomWorld()
+    {
+        if (mainCollider == null) return transform.position;
+
+        // Collider のローカル下端を使い、VisualRoot の位置合わせと同じ基準で判定する。
+        Vector2 localBottom = mainCollider switch
+        {
+            BoxCollider2D box => box.offset + Vector2.down * (box.size.y * 0.5f),
+            CapsuleCollider2D capsule => capsule.offset + Vector2.down * (capsule.size.y * 0.5f),
+            CircleCollider2D circle => circle.offset + Vector2.down * circle.radius,
+            _ => new Vector2(mainCollider.bounds.center.x, mainCollider.bounds.min.y)
+        };
+        return mainCollider is BoxCollider2D or CapsuleCollider2D or CircleCollider2D
+            ? mainCollider.transform.TransformPoint(localBottom)
+            : localBottom;
     }
 
     void OnValidate()

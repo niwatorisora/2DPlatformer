@@ -8,12 +8,14 @@ using UnityEngine;
 public class EnemySensor : MonoBehaviour
 {
     Transform trackedTarget;
+    Collider2D trackedTargetCollider;
     float detectionRange;
     float loseSightRange;
 
     public void Configure(Transform target, float detection, float loseSight)
     {
         trackedTarget  = target;
+        trackedTargetCollider = target != null ? target.GetComponent<Collider2D>() : null;
         detectionRange = Mathf.Max(0f, detection);
         loseSightRange = Mathf.Max(detectionRange, loseSight);
     }
@@ -36,7 +38,7 @@ public class EnemySensor : MonoBehaviour
     public bool IsInAttackRange(Transform target, float attackRange)
     {
         if (target == null) return false;
-        return DistanceTo(target) <= attackRange;
+        return DistanceToTargetSurface(target) <= attackRange;
     }
 
     public bool HasLostSight(Transform target)
@@ -47,4 +49,30 @@ public class EnemySensor : MonoBehaviour
 
     float DistanceTo(Transform target)
         => Vector2.Distance(transform.position, target.position);
+
+    float DistanceToTargetSurface(Transform target)
+    {
+        Collider2D targetCollider = GetTargetCollider(target);
+        if (targetCollider == null) return DistanceTo(target);
+
+        Vector2 enemyPosition = transform.position;
+        Vector2 closestPoint = targetCollider.ClosestPoint(enemyPosition);
+        return Vector2.Distance(enemyPosition, closestPoint);
+    }
+
+    Collider2D GetTargetCollider(Transform target)
+    {
+        // 追跡対象は通常固定だが、呼び出し先が別対象でも正しい Collider を使う。
+        if (target != trackedTarget)
+        {
+            trackedTarget = target;
+            trackedTargetCollider = target != null ? target.GetComponent<Collider2D>() : null;
+        }
+
+        // 実行中に Collider が追加・削除された場合も、中心距離へ安全にフォールバックする。
+        if (trackedTargetCollider == null && target != null)
+            trackedTargetCollider = target.GetComponent<Collider2D>();
+
+        return trackedTargetCollider;
+    }
 }

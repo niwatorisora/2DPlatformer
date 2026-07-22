@@ -29,6 +29,7 @@ public class EnemyChaseState : EnemyState
 /// <summary>標的が射程内にいる間、武器設定に従って攻撃する状態。</summary>
 public class EnemyAttackState : EnemyState
 {
+    const float AttackExitRangeMultiplier = 1.25f;
     bool attackInitiated;
 
     public EnemyAttackState(EnemyController controller) : base(controller) { }
@@ -49,7 +50,8 @@ public class EnemyAttackState : EnemyState
             return;
         }
 
-        if (!controller.Sensor.IsInAttackRange(controller.Target, controller.AttackRange))
+        // 境界での状態バタつき防止のため、離脱だけは接敵距離より少し外側で判定する。
+        if (!controller.Sensor.IsInAttackRange(controller.Target, controller.AttackRange * AttackExitRangeMultiplier))
         {
             controller.ChangeState(controller.ChaseState);
             return;
