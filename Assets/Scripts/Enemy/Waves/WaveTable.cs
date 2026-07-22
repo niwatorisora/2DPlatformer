@@ -10,6 +10,8 @@ public class WaveTable : ScriptableObject
     public class SpawnRow
     {
         public EnemyData enemy;
+        [Tooltip("この行の敵の見た目。未指定ならEnemyDataのデフォルトスキン")]
+        [SerializeField] public EnemySkin skin;
         [Min(0)] public int count = 1;
         [Min(0)] public int spawnPointIndex;
         [Min(0f)] public float spawnInterval = 0.5f;

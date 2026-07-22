@@ -17,15 +17,17 @@ public class EnemyController : MonoBehaviour
     public EnemyAttackState AttackState { get; private set; }
     public EnemyDeadState DeadState { get; private set; }
     EnemyStateMachine stateMachine;
+    SpriteRenderer spriteRenderer;
+    Sprite originalSprite;
     IReadOnlyList<IEnemyKillListener> killListeners;
     Action<EnemyController> despawnCallback;
-    bool initialized;
+    bool initialized, originalSpriteCached;
     bool warnedAboutMissingDespawnCallback;
     void Awake() => CacheComponents();
     /// <summary>再利用時も安全に実行時依存と状態を再設定する。</summary>
     public bool Initialize(EnemyData data, Transform target, IBulletPool bulletPool,
         IReadOnlyList<IEnemyKillListener> injectedKillListeners,
-        Action<EnemyController> injectedDespawnCallback = null)
+        Action<EnemyController> injectedDespawnCallback = null, Sprite skinSprite = null)
     {
         if (data == null)
         {
@@ -33,37 +35,32 @@ public class EnemyController : MonoBehaviour
             return false;
         }
         if (Health != null) Health.OnDied -= OnDied;
-
         initialized = false;
         Data   = data;
         Target = target;
         killListeners = injectedKillListeners;
         despawnCallback = injectedDespawnCallback;
-
         EnsureRuntimeComponents();
+        ApplySkin(skinSprite);
         if (Movement == null)
         {
             GameLog.Error(this, $"{data.name} prefab requires an EnemyMovement component to define movement behavior.");
             return false;
         }
-
         if (Attack == null)
         {
             GameLog.Error(this, $"{data.name} prefab requires an EnemyAttack component to define attack behavior.");
             return false;
         }
-
         // Pool 再利用では HP、AI 状態、物理速度を前回の個体から持ち越さない。
         Health.Initialize(data.maxHp);
         ResetPhysicsState();
         var team = GetComponent<TeamAffiliation>();
         TeamId teamId = data.teamId;
         team.SetTeam(teamId);
-
         Movement.Configure(data.moveSpeed);
         Attack.Configure(bulletPool, teamId);
         Sensor.Configure(target, data.detectionRange, data.loseSightRange);
-
         BuildStateMachine();
         Health.OnDied += OnDied;
         initialized = true;
@@ -86,6 +83,7 @@ public class EnemyController : MonoBehaviour
         Movement = GetComponent<EnemyMovement>();
         Attack   = GetComponent<EnemyAttack>();
         Sensor   = GetComponent<EnemySensor>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
         Health = GetComponent<Health>();
     }
     void EnsureRuntimeComponents()
@@ -94,6 +92,16 @@ public class EnemyController : MonoBehaviour
         if (GetComponent<TeamAffiliation>() == null) gameObject.AddComponent<TeamAffiliation>();
         if (Health == null) Health = gameObject.AddComponent<Health>();
         if (Sensor == null) Sensor = gameObject.AddComponent<EnemySensor>();
+    }
+    void ApplySkin(Sprite skinSprite)
+    {
+        if (spriteRenderer == null) return;
+        if (!originalSpriteCached)
+        {
+            originalSprite = spriteRenderer.sprite;
+            originalSpriteCached = true;
+        }
+        spriteRenderer.sprite = skinSprite != null ? skinSprite : originalSprite;
     }
 
     public void ChangeState(EnemyState next) => stateMachine?.ChangeState(next);
@@ -107,13 +115,11 @@ public class EnemyController : MonoBehaviour
             despawnCallback(this);
             return;
         }
-
         if (!warnedAboutMissingDespawnCallback)
         {
             warnedAboutMissingDespawnCallback = true;
             GameLog.Warning(this, "No despawn callback was injected; destroying scene-placed enemy.");
         }
-
         Destroy(gameObject);
     }
 
@@ -135,7 +141,6 @@ public class EnemyController : MonoBehaviour
             listener?.OnEnemyKilled(scoreValue);
         }
     }
-
     void ResetPhysicsState()
     {
         var body = GetComponent<Rigidbody2D>();

@@ -129,7 +129,10 @@ public class WaveSpawner : MonoBehaviour
         }
 
         enemy.transform.SetPositionAndRotation(spawnPoint.position, Quaternion.identity);
-        if (!enemy.Initialize(row.enemy, playerTarget, bulletPool, cachedKillListeners, HandleEnemyDespawned))
+        EnemySkin skin = row.skin ?? row.enemy.defaultSkin;
+        Sprite skinSprite = skin != null ? skin.PickRandomSprite() : null;
+        if (!enemy.Initialize(row.enemy, playerTarget, bulletPool, cachedKillListeners,
+                HandleEnemyDespawned, skinSprite))
         {
             enemyPool.Return(enemy);
             return;

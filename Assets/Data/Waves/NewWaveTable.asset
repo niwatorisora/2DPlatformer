@@ -17,13 +17,15 @@ MonoBehaviour:
     startDelay: 0
     rows:
     - enemy: {fileID: 11400000, guid: f3c314fa27f650291ba180522be0273b, type: 2}
-      count: 2
+      skin: {fileID: 11400000, guid: 5b97a6ffa7293977886d97ba71912c7a, type: 2}
+      count: 5
       spawnPointIndex: 1
       spawnInterval: 0
   - label: wave2
     startDelay: 0
     rows:
     - enemy: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
-      count: 2
+      skin: {fileID: 11400000, guid: 5b97a6ffa7293977886d97ba71912c7a, type: 2}
+      count: 10
       spawnPointIndex: 0
       spawnInterval: 0

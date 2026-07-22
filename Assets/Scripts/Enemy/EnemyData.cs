@@ -9,6 +9,8 @@ public class EnemyData : ScriptableObject
 {
     [Header("Prefab")]
     public GameObject prefab;
+    [Tooltip("見た目の既定スキン。行側の指定が優先")]
+    [SerializeField] public EnemySkin defaultSkin;
 
     [Header("Stats")]
     public TeamId teamId = TeamId.Enemy;
