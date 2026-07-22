@@ -16,4 +16,10 @@ MonoBehaviour:
   moveSpeed: 3
   jumpInterval: 1.5
   jumpVelocity: 6
+  hoverHeight: 2.5
   steeringSmoothing: 0.505
+  chargeTriggerRange: 4
+  chargeWindupSeconds: 0.4
+  chargeSpeed: 12
+  chargeDurationSeconds: 0.5
+  chargeCooldownSeconds: 1.5

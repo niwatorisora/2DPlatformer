@@ -660,6 +660,7 @@ GameObject:
   - component: {fileID: 519420030}
   - component: {fileID: 519420033}
   - component: {fileID: 519420034}
+  - component: {fileID: 519420035}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -831,6 +832,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraViewportFitter
   targetAspect: {x: 16, y: 9}
   visibleWorldHeight: 16
+--- !u!114 &519420035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 799d9a1e1de9960a4b82b9305f1c8389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraViewBounds
+  boundsLayerName: ViewBounds
 --- !u!1 &533931212
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,7 +1167,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 722605528}
-  - component: {fileID: 722605529}
   m_Layer: 0
   m_Name: SpawnPointR
   m_TagString: Untagged
@@ -1176,18 +1189,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &722605529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 722605527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6626aeee1c27422bb59cd751886e91bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
 --- !u!1 &762392571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1775,7 +1776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoxController
   moveSpeed: 5
-  jumpVelocity: 5
+  jumpVelocity: 7.5
   jumpBufferTime: 0.1
   coyoteTime: 0.1
   knockbackRecoverySeconds: 0.3
@@ -1828,7 +1829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHp: 100
   isInvulnerable: 0
-  invincibleSecondsAfterHit: 1
+  invincibleSecondsAfterHit: 0.45
 --- !u!114 &1158802521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2457,7 +2458,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1637720540}
-  - component: {fileID: 1637720541}
   m_Layer: 0
   m_Name: SpawnPointL
   m_TagString: Untagged
@@ -2480,18 +2480,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1637720541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1637720539}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6626aeee1c27422bb59cd751886e91bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
 --- !u!1 &1718777244
 GameObject:
   m_ObjectHideFlags: 0

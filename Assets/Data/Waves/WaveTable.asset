@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d419261998a318c6a8d1a10daa84fb25, type: 3}
-  m_Name: NewWaveTable
+  m_Name: WaveTable
   m_EditorClassIdentifier: Assembly-CSharp::WaveTable
   waves:
   - label: wave1
@@ -19,11 +19,21 @@ MonoBehaviour:
     - enemy: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
       skin: {fileID: 11400000, guid: 5b97a6ffa7293977886d97ba71912c7a, type: 2}
       movementProfile: {fileID: 11400000, guid: 88f03cb212193631393b8c238e99d478, type: 2}
-      attackProfile: {fileID: 11400000, guid: edfa19669f591e91ea07b0fc1985f21e, type: 2}
+      attackProfile: {fileID: 11400000, guid: cb56c50f469962166a31335a166f1c93, type: 2}
       count: 5
       spawnPointIndex: 1
       spawnInterval: 0
   - label: wave2
+    startDelay: 0
+    rows:
+    - enemy: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
+      skin: {fileID: 11400000, guid: 5b97a6ffa7293977886d97ba71912c7a, type: 2}
+      movementProfile: {fileID: 11400000, guid: 88f03cb212193631393b8c238e99d478, type: 2}
+      attackProfile: {fileID: 11400000, guid: edfa19669f591e91ea07b0fc1985f21e, type: 2}
+      count: 3
+      spawnPointIndex: 0
+      spawnInterval: 0
+  - label: wave3
     startDelay: 0
     rows:
     - enemy: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}

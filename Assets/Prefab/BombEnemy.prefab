@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1957253962543352909, guid: 708d16fa802dc4197a97f719261fdd0c, type: 3}
+  m_Sprite: {fileID: -1442360840417850031, guid: 7bc2f0df54aa6036dade85b2387c65da, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -137,13 +137,8 @@ GameObject:
   - component: {fileID: 5438480233294509801}
   - component: {fileID: 4433333333333333}
   - component: {fileID: 4749317899234359968}
-  - component: {fileID: 3576118274121784489}
-  - component: {fileID: 6271321572231354405}
-  - component: {fileID: 3275733305888919373}
-  - component: {fileID: -647172315128224935}
-  - component: {fileID: -4431552296451179955}
   m_Layer: 7
-  m_Name: BasicEnemy
+  m_Name: BombEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -294,74 +289,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e91190b0a2bfa87d96ac3f58d71398a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ContactDamageAttack
---- !u!114 &3576118274121784489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7492890432487074393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 458732ca1cf3850699cac021abee8e03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyJumpingGroundMovement
-  jumpVelocity: 6
-  jumpInterval: 1.5
-  groundCheck: {fileID: 0}
-  checkRadius: 0.2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
---- !u!114 &6271321572231354405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7492890432487074393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa02b3a4f5489e0aa9ef6d0426a7ff9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyFlyingMovement
-  steeringSmoothing: 0.15
---- !u!114 &3275733305888919373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7492890432487074393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4b18c0d70dc9060e8064a4ca29e8203, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyChargeMovement
---- !u!114 &-647172315128224935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7492890432487074393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e91190b0a2bfa87d96ac3f58d71398a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ContactDamageAttack
---- !u!114 &-4431552296451179955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7492890432487074393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d7820498628ea1be9c2b0909f701fbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SelfDestructAttack
 --- !u!1001 &1522874532071954200
 PrefabInstance:
   m_ObjectHideFlags: 0
