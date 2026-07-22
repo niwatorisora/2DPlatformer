@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Ground movement that hops at a fixed interval while actively chasing.
@@ -11,7 +10,6 @@ using UnityEngine.Serialization;
 public class EnemyJumpingGroundMovement : EnemyGroundMovement
 {
     [Header("Jump")]
-    [FormerlySerializedAs("jumpForce")]
     [SerializeField] float jumpVelocity = 6f;
     [Tooltip("接地中に追跡ジャンプを行う間隔（秒）。")]
     [SerializeField] float jumpInterval = 1.5f;

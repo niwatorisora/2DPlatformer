@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 5.0f;
+    // SampleScene.unity に旧キーjumpForceが残存するため維持（SampleScene廃止時に削除可）
     [FormerlySerializedAs("jumpForce")]
     [SerializeField] float jumpVelocity = 5.0f;
     [SerializeField] float jumpBufferTime = 0.1f;
