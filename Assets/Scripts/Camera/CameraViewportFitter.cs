@@ -15,6 +15,9 @@ public sealed class CameraViewportFitter : MonoBehaviour
     private int lastScreenWidth;
     private int lastScreenHeight;
 
+    /// <summary>固定表示に使う横:縦の比率。</summary>
+    public float TargetAspect => targetAspect.y > 0f ? targetAspect.x / targetAspect.y : 1f;
+
     private void Awake()
     {
         targetCamera = GetComponent<Camera>();
@@ -68,7 +71,7 @@ public sealed class CameraViewportFitter : MonoBehaviour
 
     private void ApplyRect()
     {
-        float target = targetAspect.x / targetAspect.y;
+        float target = TargetAspect;
         float screenAspect = (float)Screen.width / Screen.height;
 
         // レベル形状は固定の 16:9 表示を前提に作る。画面比で表示範囲を広げず、
