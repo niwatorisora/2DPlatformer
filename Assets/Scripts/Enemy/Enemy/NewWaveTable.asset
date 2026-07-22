@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: NewWaveTable
   m_EditorClassIdentifier: Assembly-CSharp::WaveTable
   waves:
-  - label: 1st
+  - label: wave1
     startDelay: 0
     rows:
     - enemy: {fileID: 11400000, guid: f3c314fa27f650291ba180522be0273b, type: 2}
       count: 2
       spawnPointIndex: 1
       spawnInterval: 0
-  - label: 2nd
+  - label: wave2
     startDelay: 0
     rows:
     - enemy: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
