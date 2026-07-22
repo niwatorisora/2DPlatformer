@@ -13,4 +13,13 @@ MonoBehaviour:
   m_Name: wave0
   m_EditorClassIdentifier: Assembly-CSharp::EnemySkin
   variants:
-  - sprite: {fileID: -7229387232364120654, guid: 696d630c108bf6eb484f202b8e8c59d8, type: 3}
+  - sprite: {fileID: 8295328934267199181, guid: 1aa5d1c1d56e5a1b595febfb227b13b0, type: 3}
+    scale: 0.5
+  - sprite: {fileID: -1442360840417850031, guid: 7bc2f0df54aa6036dade85b2387c65da, type: 3}
+    scale: 0.5
+  - sprite: {fileID: 8154237525862154466, guid: a0c28b92afffabf75a6456395d1e4188, type: 3}
+    scale: 0.5
+  - sprite: {fileID: -1729395251720989647, guid: 1a45420607239c8c2a712217a5a471e5, type: 3}
+    scale: 0.5
+  - sprite: {fileID: 279711634429524623, guid: 0efb945ee64612451a17ccc634037c6a, type: 3}
+    scale: 0.5

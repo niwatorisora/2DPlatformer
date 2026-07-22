@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1957253962543352909, guid: 708d16fa802dc4197a97f719261fdd0c, type: 3}
-  m_Color: {r: 0.8627452, g: 0.07843138, b: 0.2352941, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 7111079818637018155}
   - component: {fileID: 5438480233294509801}
   - component: {fileID: 4433333333333333}
+  - component: {fileID: 4749317899234359968}
   m_Layer: 7
   m_Name: BasicEnemy
   m_TagString: Untagged
@@ -276,6 +277,18 @@ MonoBehaviour:
   visualRoot: {fileID: 4422222222222222}
   flipSpeedThreshold: 0.1
   defaultFacingRight: 1
+--- !u!114 &4749317899234359968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7492890432487074393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e91190b0a2bfa87d96ac3f58d71398a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ContactDamageAttack
 --- !u!1001 &1522874532071954200
 PrefabInstance:
   m_ObjectHideFlags: 0

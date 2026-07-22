@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 696d630c108bf6eb484f202b8e8c59d8
+guid: 0efb945ee64612451a17ccc634037c6a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7229387232364120654
-    second: rokkotu_0
+      213: 279711634429524623
+    second: kyoukotu_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -73,7 +73,7 @@ TextureImporter:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
-    resizeAlgorithm: 1
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: rokkotu_0
+      name: kyoukotu_0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 229
-        width: 492
-        height: 412
+        x: 209
+        y: 39
+        width: 192
+        height: 722
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2b531377d9e0cab90800000000000000
-      internalID: -7229387232364120654
+      spriteID: f8a37b1ef3cb1e300800000000000000
+      internalID: 279711634429524623
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      rokkotu_0: -7229387232364120654
+      kyoukotu_0: 279711634429524623
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

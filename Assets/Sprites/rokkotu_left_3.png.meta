@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4453a83ffa629908dbd8c53eb4935bf2
+guid: a0c28b92afffabf75a6456395d1e4188
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5180861749215003805
-    second: maningun_0
+      213: 8154237525862154466
+    second: rokkotu_left_3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: maningun_0
+      name: rokkotu_left_3_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 7
-        width: 84
-        height: 36
+        x: 69
+        y: 179
+        width: 482
+        height: 412
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d948e50cf4e16e740800000000000000
-      internalID: 5180861749215003805
+      spriteID: 2e08c27a3dba92170800000000000000
+      internalID: 8154237525862154466
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      maningun_0: 5180861749215003805
+      rokkotu_left_3_0: 8154237525862154466
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: JumpingEnemyData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   prefab: {fileID: 7492890432487074393, guid: 8b50bd56557f61724bf36b410a56d26f, type: 3}
+  defaultSkin: {fileID: 0}
   teamId: 2
   maxHp: 100
+  defaultMovementProfile: {fileID: 0}
   moveSpeed: 3
   detectionRange: 8
   loseSightRange: 10
+  defaultAttackProfile: {fileID: 11400000, guid: ac80ea17545e41e8199bfb568d2f6f06, type: 2}
   attackRange: 4
   patrolEnabled: 1
   patrolDistance: 3
