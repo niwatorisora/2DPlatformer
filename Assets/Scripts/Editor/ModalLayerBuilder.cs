@@ -71,7 +71,6 @@ public static class ModalLayerBuilder
         Set(modal, "theme", theme); Set(modal, "titleLabel", title);
         Set(modal, "textLabel", label); Set(modal, "continueIndicator", indicator);
 
-        RemoveLegacyPresenter(parent);
         var serviceObject = FindOrCreate("FlavorTextService", parent);
         var service = Ensure<FlavorTextService>(serviceObject);
         Set(service, "modalManager", manager); Set(service, "modal", modal);
@@ -91,12 +90,6 @@ public static class ModalLayerBuilder
     {
         var hud = GameObject.Find("Retro HUD");
         return hud != null && hud.TryGetComponent<Canvas>(out var canvas) ? canvas.sortingOrder : 100;
-    }
-
-    static void RemoveLegacyPresenter(Transform parent)
-    {
-        var legacy = parent.Find("FlavorTextPresenter");
-        if (legacy != null) Undo.DestroyObjectImmediate(legacy.gameObject);
     }
 
     static GameObject FindOrCreate(string name, Transform parent)

@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerShooter : MonoBehaviour
 {
     [SerializeField] BulletPool bulletPool;
-    [FormerlySerializedAs("firePoint")]
     [SerializeField] Transform shootOrigin;
     [SerializeField] float spawnDistanceFromOrigin = 0.6f;
     [SerializeField] Camera targetCamera;

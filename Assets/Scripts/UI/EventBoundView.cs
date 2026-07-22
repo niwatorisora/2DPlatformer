@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Delays event binding until its target exists, supporting runtime-created gameplay objects.
@@ -8,7 +7,7 @@ public abstract class EventBoundView<TTarget> : MonoBehaviour where TTarget : Co
 {
     const float RetryInterval = 0.5f;
 
-    [SerializeField, FormerlySerializedAs("magazine"), FormerlySerializedAs("scoreManager")]
+    [SerializeField]
     TTarget target;
 
     bool subscribed;

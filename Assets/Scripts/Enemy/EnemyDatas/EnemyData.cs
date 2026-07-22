@@ -33,7 +33,7 @@ public class EnemyData : ScriptableObject
     public int scoreValue = 100;
 
     [Header("Audio")]
-    // 撃破時に再生。未設定なら無音（後方互換）。
+    // 撃破時に再生。未設定なら無音。
     public SoundData deathSound;
 
     void OnValidate()

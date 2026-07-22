@@ -1,12 +1,10 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Combat/Weapon Data")]
 public class WeaponData : ScriptableObject
 {
     [Header("Identity")]
     public string displayName = "Weapon";
-    [FormerlySerializedAs("weaponSprite")]
     [SerializeField, Tooltip("HUD表示用アイコン")]
     Sprite hudIcon;
     [SerializeField, Tooltip("プレイヤーに持たせる表示用・未使用なら空でよい")]
@@ -37,7 +35,7 @@ public class WeaponData : ScriptableObject
     public bool autoReloadWhenEmpty = true;// マガジンが空になったら自動でリロード開始
 
     [Header("Audio")]
-    // 射撃サルボ成功時に再生。未設定なら無音（後方互換）。
+    // 射撃サルボ成功時に再生。未設定なら無音。
     public SoundData fireSound;
     // リロード開始時に再生。未設定なら無音。
     public SoundData reloadSound;
