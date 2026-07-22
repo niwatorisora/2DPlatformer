@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 492beef0dde5295c4b5d9ac267dd5bea, type: 3}
+  m_Name: New Hud Theme
+  m_EditorClassIdentifier: Assembly-CSharp::HudTheme
+  boneCream: {r: 0.9098039, g: 0.8352941, b: 0.65882355, a: 1}
+  darkBrown: {r: 0.2901961, g: 0.18039216, b: 0.078431375, a: 1}
+  gold: {r: 0.9411765, g: 0.7529412, b: 0.1882353, a: 1}
+  panelDark: {r: 0.101960786, g: 0.078431375, b: 0.1254902, a: 1}
+  font: {fileID: 0}
+  weaponIcon: {fileID: 5180861749215003805, guid: 4453a83ffa629908dbd8c53eb4935bf2, type: 3}
+  hpSegmentFull: {fileID: 0}
+  hpSegmentEmpty: {fileID: 0}
+  panelFrame: {fileID: 0}

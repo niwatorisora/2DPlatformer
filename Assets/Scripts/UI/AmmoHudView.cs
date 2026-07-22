@@ -8,10 +8,33 @@ using UnityEngine.UI;
 /// </summary>
 public class AmmoHudView : EventBoundView<Magazine>
 {
+    [SerializeField] HudTheme theme;
+    [SerializeField] Image panel;
     [SerializeField] Text ammoLabel;         // "30 / 120"
     [SerializeField] Text weaponNameLabel;   // 武器の displayName
-    // WeaponData.weaponSprite を表示する Image。未アサインなら無視。
+    // HudTheme.weaponIcon を表示する。スプライト未設定時は単色表示にする。
     [SerializeField] Image weaponIconImage;
+    [SerializeField] HudPunch punch;
+
+    bool hasValue;
+    int previousAmmo;
+    int previousReserve;
+
+    void Awake() => ApplyTheme();
+
+    public void ApplyTheme()
+    {
+        if (theme == null) return;
+        theme.ApplyImage(panel, theme.PanelFrame(), theme.PanelDark());
+        theme.ApplyText(ammoLabel, Target != null && Target.IsFull
+            ? theme.Gold() : theme.BoneCream());
+        theme.ApplyText(weaponNameLabel, theme.BoneCream());
+
+        if (weaponIconImage == null) return;
+        theme.ApplyImage(weaponIconImage, theme.WeaponIcon(), theme.Gold());
+        weaponIconImage.preserveAspect = true;
+        weaponIconImage.enabled = true;
+    }
 
     protected override void Subscribe(Magazine magazine)
     {
@@ -25,12 +48,19 @@ public class AmmoHudView : EventBoundView<Magazine>
 
     protected override void OnTargetBound(Magazine magazine)
     {
+        ApplyTheme();
         Refresh();
     }
 
     void Refresh()
     {
         if (Target == null) return;
+
+        bool changed = hasValue && (previousAmmo != Target.CurrentAmmo ||
+            previousReserve != Target.ReserveAmmo);
+        previousAmmo = Target.CurrentAmmo;
+        previousReserve = Target.ReserveAmmo;
+        hasValue = true;
 
         if (ammoLabel != null)
         {
@@ -42,12 +72,7 @@ public class AmmoHudView : EventBoundView<Magazine>
         if (weaponNameLabel != null)
             weaponNameLabel.text = Target.Weapon != null ? Target.Weapon.displayName : "";
 
-        if (weaponIconImage != null)
-        {
-            var sprite = Target.Weapon != null ? Target.Weapon.weaponSprite : null;
-            weaponIconImage.sprite = sprite;
-            // スプライト未設定時は Image コンポーネントを非表示にして透過を避ける。
-            weaponIconImage.enabled = sprite != null;
-        }
+        ApplyTheme();
+        if (changed) punch?.Punch();
     }
 }
