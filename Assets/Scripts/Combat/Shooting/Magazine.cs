@@ -16,6 +16,7 @@ public class Magazine : MonoBehaviour
     public event Action OnAmmoChanged;
     public event Action OnReloadStarted;
     public event Action OnReloadCompleted;
+    public event Action OnReloadCancelled;
 
     // --- 設定（Configure で WeaponData から取り込む） ---
     int magazineSize;
@@ -102,9 +103,13 @@ public class Magazine : MonoBehaviour
 
     void CancelReload()
     {
+        bool wasReloading = isReloading;
         if (reloadRoutine != null) StopCoroutine(reloadRoutine);
         reloadRoutine = null;
         isReloading = false;
+
+        // キャンセル時も購読者へ通知しないとHUDが固まる。
+        if (wasReloading) OnReloadCancelled?.Invoke();
     }
 
     void OnDisable() => CancelReload();

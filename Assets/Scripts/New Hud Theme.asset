@@ -17,7 +17,6 @@ MonoBehaviour:
   gold: {r: 0.9411765, g: 0.7529412, b: 0.1882353, a: 1}
   panelDark: {r: 0.101960786, g: 0.078431375, b: 0.1254902, a: 1}
   font: {fileID: 0}
-  weaponIcon: {fileID: 5180861749215003805, guid: 4453a83ffa629908dbd8c53eb4935bf2, type: 3}
   hpSegmentFull: {fileID: 0}
   hpSegmentEmpty: {fileID: 0}
   panelFrame: {fileID: 0}

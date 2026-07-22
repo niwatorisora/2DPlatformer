@@ -12,7 +12,7 @@ public class AmmoHudView : EventBoundView<Magazine>
     [SerializeField] Image panel;
     [SerializeField] Text ammoLabel;         // "30 / 120"
     [SerializeField] Text weaponNameLabel;   // 武器の displayName
-    // HudTheme.weaponIcon を表示する。スプライト未設定時は単色表示にする。
+    // WeaponData.hudIcon を表示する。未設定時はテーマ色の単色表示にする。
     [SerializeField] Image weaponIconImage;
     [SerializeField] HudPunch punch;
 
@@ -30,10 +30,6 @@ public class AmmoHudView : EventBoundView<Magazine>
             ? theme.Gold() : theme.BoneCream());
         theme.ApplyText(weaponNameLabel, theme.BoneCream());
 
-        if (weaponIconImage == null) return;
-        theme.ApplyImage(weaponIconImage, theme.WeaponIcon(), theme.Gold());
-        weaponIconImage.preserveAspect = true;
-        weaponIconImage.enabled = true;
     }
 
     protected override void Subscribe(Magazine magazine)
@@ -49,7 +45,17 @@ public class AmmoHudView : EventBoundView<Magazine>
     protected override void OnTargetBound(Magazine magazine)
     {
         ApplyTheme();
+        ApplyWeaponIcon();
         Refresh();
+    }
+
+    void ApplyWeaponIcon()
+    {
+        if (weaponIconImage == null || theme == null) return;
+        theme.ApplyImage(weaponIconImage, Target?.Weapon != null ? Target.Weapon.HudIcon : null,
+            theme.Gold());
+        weaponIconImage.preserveAspect = true;
+        weaponIconImage.enabled = true;
     }
 
     void Refresh()
@@ -72,6 +78,9 @@ public class AmmoHudView : EventBoundView<Magazine>
         if (weaponNameLabel != null)
             weaponNameLabel.text = Target.Weapon != null ? Target.Weapon.displayName : "";
 
+        // Configure may run after this view first binds. Re-apply the icon on each
+        // ammo update so a late-equipped weapon replaces the fallback image.
+        ApplyWeaponIcon();
         ApplyTheme();
         if (changed) punch?.Punch();
     }

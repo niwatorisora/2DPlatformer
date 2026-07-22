@@ -14,8 +14,6 @@ public class HudTheme : ScriptableObject
     Color panelDark = new Color32(0x1A, 0x14, 0x20, 0xFF);
     [SerializeField, Tooltip("HUD全体で使う任意のフォントです。未設定時は既存フォントを維持します。")]
     Font font;
-    [SerializeField, Tooltip("武器表示に使う任意のスプライトです。")]
-    Sprite weaponIcon;
     [SerializeField, Tooltip("HP満タン区画に使う任意のスプライトです。")]
     Sprite hpSegmentFull;
     [SerializeField, Tooltip("HP空区画に使う任意のスプライトです。")]
@@ -27,7 +25,6 @@ public class HudTheme : ScriptableObject
     public Color DarkBrown() => darkBrown;
     public Color Gold() => gold;
     public Color PanelDark() => panelDark;
-    public Sprite WeaponIcon() => weaponIcon;
     public Sprite HpSegment(bool full) => full ? hpSegmentFull : hpSegmentEmpty;
     public Sprite PanelFrame() => panelFrame;
 

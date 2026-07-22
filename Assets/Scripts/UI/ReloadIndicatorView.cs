@@ -27,12 +27,16 @@ public class ReloadIndicatorView : EventBoundView<Magazine>
     {
         magazine.OnReloadStarted += StartBlinking;
         magazine.OnReloadCompleted += StopBlinking;
+        magazine.OnReloadCancelled += StopBlinking;
+        magazine.OnAmmoChanged += HandleAmmoChanged;
     }
 
     protected override void Unsubscribe(Magazine magazine)
     {
         magazine.OnReloadStarted -= StartBlinking;
         magazine.OnReloadCompleted -= StopBlinking;
+        magazine.OnReloadCancelled -= StopBlinking;
+        magazine.OnAmmoChanged -= HandleAmmoChanged;
     }
 
     protected override void OnTargetBound(Magazine magazine)
@@ -61,5 +65,10 @@ public class ReloadIndicatorView : EventBoundView<Magazine>
     {
         blinking = false;
         if (reloadLabel != null) reloadLabel.enabled = false;
+    }
+
+    void HandleAmmoChanged()
+    {
+        if (Target != null && !Target.IsReloading) StopBlinking();
     }
 }

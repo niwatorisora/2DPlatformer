@@ -1,12 +1,19 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Combat/Weapon Data")]
 public class WeaponData : ScriptableObject
 {
     [Header("Identity")]
     public string displayName = "Weapon";
-    // 武器切替 HUD や将来のアイテム UI で使うスプライト。ゲームプレイ値ではないため任意。
-    public Sprite weaponSprite;
+    [FormerlySerializedAs("weaponSprite")]
+    [SerializeField, Tooltip("HUD表示用アイコン")]
+    Sprite hudIcon;
+    [SerializeField, Tooltip("プレイヤーに持たせる表示用・未使用なら空でよい")]
+    Sprite heldSprite;
+
+    public Sprite HudIcon => hudIcon;
+    public Sprite HeldSprite => heldSprite;
 
     [Header("Bullet")]
     public BulletData bulletData;

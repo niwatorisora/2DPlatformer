@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: Shotgun
+  hudIcon: {fileID: 5180861749215003805, guid: 4453a83ffa629908dbd8c53eb4935bf2, type: 3}
+  heldSprite: {fileID: 0}
   bulletData: {fileID: 11400000, guid: d3c8536951974b249ab69ccb130252e8, type: 2}
   autoFire: 0
   cooldown: 0.2
@@ -25,3 +27,5 @@ MonoBehaviour:
   startingReserveAmmo: 120
   infiniteReserve: 0
   autoReloadWhenEmpty: 1
+  fireSound: {fileID: 11400000, guid: cd16f20005d95177c93f2d84befee293, type: 2}
+  reloadSound: {fileID: 11400000, guid: 13680bd26f524615888cec0b9d4e451e, type: 2}
