@@ -42,34 +42,32 @@ public static class ModalLayerBuilder
     static void BuildFlavor(Transform parent, ModalManager manager)
     {
         var panel = FindOrCreate("FlavorTextModal", parent);
-        Rect(panel.GetComponent<RectTransform>(), new Vector2(1200f, 500f), Vector2.one * .5f,
-            Vector2.one * .5f, Vector2.zero);
+        Stretch(panel.GetComponent<RectTransform>());
         var image = Ensure<Image>(panel);
+        image.sprite = null;
+        image.type = Image.Type.Simple;
+        image.color = new Color(0x0A / 255f, 0x08 / 255f, 0x10 / 255f, .96f);
+        image.raycastTarget = true;
         var canvasGroup = Ensure<CanvasGroup>(panel);
         canvasGroup.alpha = 0f; canvasGroup.interactable = false; canvasGroup.blocksRaycasts = false;
 
         var modal = Ensure<FlavorTextModal>(panel);
-        var title = Label("Title", panel.transform, 48, TextAnchor.UpperLeft);
-        title.rectTransform.anchorMin = new Vector2(0f, 1f);
-        title.rectTransform.anchorMax = new Vector2(1f, 1f);
-        title.rectTransform.pivot = new Vector2(.5f, 1f);
-        title.rectTransform.offsetMin = new Vector2(48f, -120f);
-        title.rectTransform.offsetMax = new Vector2(-48f, -48f);
-        var label = Label("Text", panel.transform, 36, TextAnchor.UpperLeft);
-        label.rectTransform.anchorMin = Vector2.zero;
-        label.rectTransform.anchorMax = Vector2.one;
-        label.rectTransform.offsetMin = new Vector2(48f, 48f);
-        label.rectTransform.offsetMax = new Vector2(-48f, -144f);
-        var indicator = Label("Continue Indicator", panel.transform, 32, TextAnchor.LowerRight);
-        indicator.text = "▼";
-        Rect(indicator.rectTransform, new Vector2(80f, 48f), Vector2.one, Vector2.one,
-            new Vector2(-32f, -24f));
+        RemoveChild(panel.transform, "Title");
+        RemoveChild(panel.transform, "Continue Indicator");
+        var titleRoot = FindOrCreate("TitleRoot", panel.transform).GetComponent<RectTransform>();
+        Stretch(titleRoot);
+        RemoveMask(titleRoot.gameObject);
+        titleRoot.SetSiblingIndex(0);
+        var label = Label("Text", panel.transform, 48, TextAnchor.MiddleCenter);
+        Rect(label.rectTransform, new Vector2(1100f, 360f), new Vector2(.5f, .45f),
+            Vector2.one * .5f, Vector2.zero);
+        label.horizontalOverflow = HorizontalWrapMode.Wrap;
+        label.verticalOverflow = VerticalWrapMode.Overflow;
+        label.lineSpacing = 1.25f;
 
         HudTheme theme = FirstAsset<HudTheme>();
-        if (theme != null) theme.ApplyImage(image, null, theme.PanelDark());
-        else image.color = new Color32(0x1A, 0x14, 0x20, 0xFF);
-        Set(modal, "theme", theme); Set(modal, "titleLabel", title);
-        Set(modal, "textLabel", label); Set(modal, "continueIndicator", indicator);
+        Set(modal, "theme", theme); Set(modal, "titleRoot", titleRoot);
+        Set(modal, "textLabel", label);
 
         var serviceObject = FindOrCreate("FlavorTextService", parent);
         var service = Ensure<FlavorTextService>(serviceObject);
@@ -98,6 +96,18 @@ public static class ModalLayerBuilder
         var go = child != null ? child.gameObject : new GameObject(name, typeof(RectTransform));
         if (child == null) go.transform.SetParent(parent, false);
         return go;
+    }
+
+    static void RemoveChild(Transform parent, string name)
+    {
+        var child = parent.Find(name);
+        if (child != null) Undo.DestroyObjectImmediate(child.gameObject);
+    }
+
+    static void RemoveMask(GameObject go)
+    {
+        if (go.TryGetComponent<Mask>(out var mask)) Undo.DestroyObjectImmediate(mask);
+        if (go.TryGetComponent<RectMask2D>(out var rectMask)) Undo.DestroyObjectImmediate(rectMask);
     }
 
     static T Ensure<T>(GameObject go) where T : Component

@@ -3,14 +3,14 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class ModalPanel : MonoBehaviour
 {
-    CanvasGroup canvasGroup;
+    protected CanvasGroup CanvasGroup { get; private set; }
 
     // ModalManager が Push 時に設定する。この参照を直接変更しないこと。
     protected ModalManager Owner { get; private set; }
 
     void Awake()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
+        CanvasGroup = GetComponent<CanvasGroup>();
     }
 
     // ModalManager 専用。各パネルから直接 Open / Close を呼ばないこと。
@@ -21,7 +21,7 @@ public abstract class ModalPanel : MonoBehaviour
     }
 
     // ModalManager 専用。各パネルから直接 Open / Close を呼ばないこと。
-    internal void Close()
+    internal virtual void Close()
     {
         SetVisible(false);
         OnClosed();
@@ -44,8 +44,8 @@ public abstract class ModalPanel : MonoBehaviour
 
     void SetVisible(bool visible)
     {
-        canvasGroup.alpha = visible ? 1f : 0f;
-        canvasGroup.interactable = visible;
-        canvasGroup.blocksRaycasts = visible;
+        CanvasGroup.alpha = visible ? 1f : 0f;
+        CanvasGroup.interactable = visible;
+        CanvasGroup.blocksRaycasts = visible;
     }
 }
