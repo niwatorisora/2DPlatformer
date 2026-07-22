@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f698d029ade8fb8639cf0ce2b8ff6639, type: 3}
   m_Name: JumpingEnemyData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  prefab: {fileID: 7492890432487074393, guid: 194c768bfe51189098bdcbaa4bbff562, type: 3}
+  prefab: {fileID: 7492890432487074393, guid: 8b50bd56557f61724bf36b410a56d26f, type: 3}
   teamId: 2
   maxHp: 100
   moveSpeed: 3
@@ -21,3 +21,5 @@ MonoBehaviour:
   attackRange: 4
   patrolEnabled: 1
   patrolDistance: 3
+  scoreValue: 100
+  deathSound: {fileID: 0}

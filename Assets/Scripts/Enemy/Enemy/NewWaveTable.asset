@@ -12,4 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d419261998a318c6a8d1a10daa84fb25, type: 3}
   m_Name: NewWaveTable
   m_EditorClassIdentifier: Assembly-CSharp::WaveTable
-  waves: []
+  waves:
+  - label: 1st
+    startDelay: 0
+    rows:
+    - enemy: {fileID: 11400000, guid: f3c314fa27f650291ba180522be0273b, type: 2}
+      count: 2
+      spawnPointIndex: 1
+      spawnInterval: 0
+  - label: 2nd
+    startDelay: 0
+    rows:
+    - enemy: {fileID: 11400000, guid: 69931f9c476db9f7bb2b766e0c099a76, type: 2}
+      count: 2
+      spawnPointIndex: 0
+      spawnInterval: 0
