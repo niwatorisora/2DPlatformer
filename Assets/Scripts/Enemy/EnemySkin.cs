@@ -11,13 +11,23 @@ public class EnemySkin : ScriptableObject
     public class Variant
     {
         [SerializeField] Sprite sprite;
+        [Tooltip("この見た目の表示倍率。インポートのPPUを触らず微調整する用")]
+        [SerializeField] float scale = 1f;
         public Sprite Sprite => sprite;
+        public float Scale => scale;
+    }
+
+    public readonly struct Selection
+    {
+        public readonly Sprite Sprite;
+        public readonly float Scale;
+        public Selection(Sprite sprite, float scale) => (Sprite, Scale) = (sprite, scale);
     }
 
     [SerializeField] List<Variant> variants = new();
     bool warnedAboutEmptyVariants;
 
-    public Sprite PickRandomSprite()
+    public Selection PickRandom()
     {
         if (variants == null || variants.Count == 0)
         {
@@ -27,10 +37,12 @@ public class EnemySkin : ScriptableObject
                 GameLog.Warning(this, "EnemySkin に variants がありません。既定のスプライトを使用します。");
             }
 
-            return null;
+            return new Selection(null, 1f);
         }
 
         Variant variant = variants[UnityEngine.Random.Range(0, variants.Count)];
-        return variant != null ? variant.Sprite : null;
+        return variant != null
+            ? new Selection(variant.Sprite, variant.Scale)
+            : new Selection(null, 1f);
     }
 }

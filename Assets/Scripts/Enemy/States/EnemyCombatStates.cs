@@ -14,7 +14,7 @@ public class EnemyChaseState : EnemyState
             return;
         }
 
-        if (controller.Sensor.IsInAttackRange(controller.Target, controller.Data.attackRange))
+        if (controller.Sensor.IsInAttackRange(controller.Target, controller.AttackRange))
         {
             controller.ChangeState(controller.AttackState);
             return;
@@ -35,7 +35,8 @@ public class EnemyAttackState : EnemyState
 
     public override void Enter()
     {
-        controller.Movement.Stop();
+        // 接触攻撃は接敵距離内でも押し込み続け、Collider が重なる位置まで到達させる。
+        if (!controller.UsesContactAttackProfile) controller.Movement.Stop();
         attackInitiated = false;
     }
 
@@ -48,11 +49,13 @@ public class EnemyAttackState : EnemyState
             return;
         }
 
-        if (!controller.Sensor.IsInAttackRange(controller.Target, controller.Data.attackRange))
+        if (!controller.Sensor.IsInAttackRange(controller.Target, controller.AttackRange))
         {
             controller.ChangeState(controller.ChaseState);
             return;
         }
+
+        if (controller.UsesContactAttackProfile) controller.Movement.MoveToward(controller.Target.position);
 
         if (controller.Attack.IsAutoFire)
         {

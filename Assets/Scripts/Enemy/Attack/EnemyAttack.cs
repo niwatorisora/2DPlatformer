@@ -8,8 +8,8 @@ public abstract class EnemyAttack : MonoBehaviour
 {
     public virtual bool IsAutoFire => false;
 
-    /// <summary>Called once by EnemyController.Initialize to inject runtime dependencies.</summary>
-    public abstract void Configure(IBulletPool bulletPool, TeamId ownerTeam);
+    /// <summary>EnemyController がプロファイルと実行時依存を注入する。</summary>
+    public abstract void Configure(AttackProfile profile, IBulletPool bulletPool, TeamId ownerTeam);
 
     public abstract bool CanAttack(Transform target);
 

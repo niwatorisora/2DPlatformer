@@ -40,8 +40,11 @@ public class Health : MonoBehaviour, IDamageable
     [Tooltip("Initial HP for manually placed actors. Enemies spawned by WaveSpawner use EnemyData.maxHp instead.")]
     [SerializeField] int maxHp = 100;
     [SerializeField] bool isInvulnerable;
+    [SerializeField, Tooltip("被弾後の無敵時間。0で無効。プレイヤー用")]
+    float invincibleSecondsAfterHit = 0f;
 
     int currentHp;
+    float nextDamageTime;
     TeamAffiliation teamAffiliation;
 
     public event Action<int> OnDamaged;
@@ -71,12 +74,14 @@ public class Health : MonoBehaviour, IDamageable
     {
         maxHp = Mathf.Max(1, newMaxHp);
         currentHp = maxHp;
+        nextDamageTime = 0f;
     }
 
     public bool CanReceiveDamage(DamageContext context)
     {
         if (!IsAlive) return false;
         if (isInvulnerable) return false;
+        if (Time.time < nextDamageTime) return false;
         if (context.amount <= 0) return false;
 
         return !IsFriendlySource(context.sourceTeam);
@@ -90,6 +95,7 @@ public class Health : MonoBehaviour, IDamageable
         if (finalDamage <= 0) return;
 
         currentHp = Mathf.Max(0, currentHp - finalDamage);
+        nextDamageTime = Time.time + invincibleSecondsAfterHit;
         OnDamaged?.Invoke(finalDamage);
 
         if (currentHp <= 0)
@@ -111,5 +117,6 @@ public class Health : MonoBehaviour, IDamageable
     void OnValidate()
     {
         maxHp = Mathf.Max(1, maxHp);
+        invincibleSecondsAfterHit = Mathf.Max(0f, invincibleSecondsAfterHit);
     }
 }

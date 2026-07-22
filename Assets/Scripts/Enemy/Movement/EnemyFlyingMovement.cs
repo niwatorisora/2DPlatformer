@@ -13,19 +13,27 @@ public class EnemyFlyingMovement : EnemyMovement
     [SerializeField, Range(0.01f, 1f)] float steeringSmoothing = 0.15f;
 
     Rigidbody2D rb;
+    float originalGravityScale;
     float moveSpeed;
     Vector2 desiredVelocity;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        // Flying enemies are not affected by gravity.
-        rb.gravityScale = 0f;
+        originalGravityScale = rb.gravityScale;
     }
 
     public override void Configure(float speed)
     {
         moveSpeed = Mathf.Max(0f, speed);
+    }
+
+    /// <summary>共有速度と飛行時の旋回係数を適用する。</summary>
+    public override void Configure(MovementProfile profile)
+    {
+        if (profile == null) return;
+        steeringSmoothing = Mathf.Clamp(profile.SteeringSmoothing, 0.01f, 1f);
+        Configure(profile.MoveSpeed);
     }
 
     public override void MoveToward(Vector2 worldPosition)
@@ -37,6 +45,16 @@ public class EnemyFlyingMovement : EnemyMovement
     public override void Stop()
     {
         desiredVelocity = Vector2.zero;
+    }
+
+    void OnEnable()
+    {
+        if (rb != null) rb.gravityScale = 0f;
+    }
+
+    void OnDisable()
+    {
+        if (rb != null) rb.gravityScale = originalGravityScale;
     }
 
     void FixedUpdate()

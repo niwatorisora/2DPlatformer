@@ -17,6 +17,9 @@ public class EnemyData : ScriptableObject
     public int maxHp = 100;
 
     [Header("Movement")]
+    [Tooltip("既定の移動挙動。行側の指定が優先")]
+    [SerializeField] public MovementProfile defaultMovementProfile;
+    // 廃止予定: プロファイル未指定時だけ使用する旧形式の速度設定。
     public float moveSpeed = 3f;
 
     [Header("Detection")]
@@ -25,6 +28,9 @@ public class EnemyData : ScriptableObject
     public float loseSightRange = 8f;
 
     [Header("Attack")]
+    [Tooltip("既定の攻撃手段。行側の指定が優先")]
+    [SerializeField] public AttackProfile defaultAttackProfile;
+    // 廃止予定: AttackProfile 未指定時だけ使用する旧形式の接敵距離設定。
     public float attackRange = 4f;
 
     [Header("Patrol")]

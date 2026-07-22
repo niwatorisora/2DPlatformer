@@ -34,8 +34,17 @@ public class EnemyJumpingGroundMovement : EnemyGroundMovement
     public override void Configure(float speed)
     {
         base.Configure(speed);
-        // プール再利用時に前回のジャンプクールダウンを持ち越さない。
-        nextJumpTime = 0f;
+        // 同フレーム出現の個体が同期して跳ぶのを防ぐ。
+        nextJumpTime = Time.time + Random.Range(0f, jumpInterval);
+    }
+
+    /// <summary>共有速度とジャンプ用の値を適用し、次回ジャンプ時刻を再同期する。</summary>
+    public override void Configure(MovementProfile profile)
+    {
+        if (profile == null) return;
+        jumpInterval = Mathf.Max(0f, profile.JumpInterval);
+        jumpVelocity = Mathf.Max(0f, profile.JumpVelocity);
+        Configure(profile.MoveSpeed);
     }
 
     public override void MoveToward(Vector2 worldPosition)
@@ -64,7 +73,7 @@ public class EnemyJumpingGroundMovement : EnemyGroundMovement
         // 高さ条件ではプレイヤーのジャンプに同期してしまうため使用しない。
         // 追跡中は接地ごとに一定間隔でホップする。
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
-        nextJumpTime = Time.time + jumpInterval;
+        nextJumpTime = Time.time + jumpInterval * Random.Range(0.85f, 1.15f);
     }
 
     bool IsGrounded()

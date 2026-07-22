@@ -21,6 +21,13 @@ public class EnemyGroundMovement : EnemyMovement
         moveSpeed = Mathf.Max(0f, speed);
     }
 
+    /// <summary>地上移動に必要な共有速度をプロファイルから適用する。</summary>
+    public override void Configure(MovementProfile profile)
+    {
+        if (profile == null) return;
+        Configure(profile.MoveSpeed);
+    }
+
     public override void MoveToward(Vector2 worldPosition)
     {
         float direction = Mathf.Sign(worldPosition.x - transform.position.x);
