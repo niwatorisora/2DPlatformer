@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: New Hud Theme
   m_EditorClassIdentifier: Assembly-CSharp::HudTheme
   boneCream: {r: 0.9098039, g: 0.8352941, b: 0.65882355, a: 1}
+  flavorBodyColor: {r: 0.9490196, g: 0.9372549, b: 0.9019608, a: 1}
   darkBrown: {r: 0.2901961, g: 0.18039216, b: 0.078431375, a: 1}
   gold: {r: 0.9411765, g: 0.7529412, b: 0.1882353, a: 1}
   panelDark: {r: 0.101960786, g: 0.078431375, b: 0.1254902, a: 1}
-  font: {fileID: 0}
+  font: {fileID: 12800000, guid: 848e5d0655cbb145bb7fae35b75938dd, type: 3}
+  flavorFont: {fileID: 0}
   hpSegmentFull: {fileID: 0}
   hpSegmentEmpty: {fileID: 0}
   panelFrame: {fileID: 0}
