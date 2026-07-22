@@ -308,9 +308,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 458732ca1cf3850699cac021abee8e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyJumpingGroundMovement
-  jumpForce: 6
-  jumpCooldown: 1.5
-  jumpHeightThreshold: 1
+  jumpVelocity: 6
+  jumpInterval: 1.5
   groundCheck: {fileID: 8112699918242799596}
   checkRadius: 0.2
   groundLayer:
