@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "NewAttackProfile", menuName = "Combat/Attack Profile")]
 public class AttackProfile : ScriptableObject
 {
-    public enum AttackKind { Shooter, Contact }
+    public enum AttackKind { Shooter, Contact, SelfDestruct }
 
     [Header("Kind")]
     [SerializeField] AttackKind kind;
@@ -31,6 +31,11 @@ public class AttackProfile : ScriptableObject
     [Tooltip("攻撃者の速度をどれだけ上乗せするか。突進の勢いが乗る")]
     [SerializeField] float attackerVelocityInheritance = 0.5f;
 
+    [Header("Self Destruct")]
+    [SerializeField] ExplosionSpec explosion = default;
+    [Tooltip("起爆までの導火線。点滅で予告する")]
+    [SerializeField] float fuseSeconds = 0.6f;
+
     public AttackKind Kind => kind;
     public WeaponData WeaponData => weaponData;
     public float EngageRange => engageRange;
@@ -41,6 +46,8 @@ public class AttackProfile : ScriptableObject
     public float KnockbackUpwardRatio => knockbackUpwardRatio;
     public float HitstunSeconds => hitstunSeconds;
     public float AttackerVelocityInheritance => attackerVelocityInheritance;
+    public ExplosionSpec Explosion => explosion;
+    public float FuseSeconds => fuseSeconds;
 
     void OnValidate()
     {
@@ -56,7 +63,14 @@ public class AttackProfile : ScriptableObject
         knockbackUpwardRatio = Mathf.Max(0f, knockbackUpwardRatio);
         hitstunSeconds = Mathf.Max(0f, hitstunSeconds);
         attackerVelocityInheritance = Mathf.Max(0f, attackerVelocityInheritance);
+        fuseSeconds = Mathf.Max(0f, fuseSeconds);
+        if (kind == AttackKind.SelfDestruct && explosion.radius <= 0f) explosion = ExplosionSpec.Default;
     }
 
-    static float GetDefaultEngageRange(AttackKind attackKind) => attackKind == AttackKind.Contact ? 0.6f : 4f;
+    static float GetDefaultEngageRange(AttackKind attackKind) => attackKind switch
+    {
+        AttackKind.Contact => 0.6f,
+        AttackKind.SelfDestruct => 1.2f,
+        _ => 4f
+    };
 }

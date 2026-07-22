@@ -39,25 +39,11 @@ public class ContactDamageAttack : EnemyAttack
 
     void ApplyKnockback(Health victim)
     {
-        Rigidbody2D body = victim.GetComponent<Rigidbody2D>();
-        if (body == null || profile.KnockbackForce <= 0f) return;
-        float horizontalSign = Mathf.Sign(victim.transform.position.x - transform.position.x);
-        if (horizontalSign == 0f)
-        {
-            horizontalSign = -Mathf.Sign(body.linearVelocity.x);
-            if (horizontalSign == 0f) horizontalSign = 1f;
-        }
-        // どこから触れても「後ろ斜め上」に飛ばし、ノックバックを体感で分からせる。
-        Vector2 direction = new Vector2(horizontalSign, profile.KnockbackUpwardRatio).normalized;
         Rigidbody2D attackerBody = GetComponent<Rigidbody2D>();
         Vector2 attackerVelocity = attackerBody != null ? attackerBody.linearVelocity : Vector2.zero;
-        Vector2 finalVelocity = direction * profile.KnockbackForce
-            + attackerVelocity * profile.AttackerVelocityInheritance;
-        IKnockbackReceiver receiver = victim.GetComponent(typeof(IKnockbackReceiver)) as IKnockbackReceiver;
-        if (receiver != null)
-            receiver.ReceiveKnockback(finalVelocity, profile.HitstunSeconds);
-        else
-            body.linearVelocity = finalVelocity;
+        KnockbackUtility.Apply(victim, transform.position, profile.KnockbackForce,
+            profile.KnockbackUpwardRatio, profile.HitstunSeconds,
+            attackerVelocity * profile.AttackerVelocityInheritance);
     }
 
     void PruneHitTimes()

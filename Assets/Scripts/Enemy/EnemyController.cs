@@ -97,6 +97,8 @@ public partial class EnemyController : MonoBehaviour
         AttackRange = profile != null ? profile.EngageRange : data.attackRange;
         UsesContactAttackProfile = profile != null && profile.Kind == AttackProfile.AttackKind.Contact;
         selected.Configure(profile, bulletPool, teamId);
+        string kind = profile != null ? profile.Kind.ToString() : selected.GetType().Name;
+        GameLog.Debug(this, $"攻撃役: {kind} を選択");
         return true;
     }
     EnemyMovement FindMovement(MovementProfile.MovementKind kind)
@@ -108,26 +110,37 @@ public partial class EnemyController : MonoBehaviour
     EnemyAttack FindAttack(AttackProfile.AttackKind kind)
     {
         foreach (EnemyAttack attack in attackComponents)
-            if (kind == AttackProfile.AttackKind.Shooter ? attack is EnemyShooterAttack : attack is ContactDamageAttack) return attack;
+            if (MatchesProfile(attack, kind)) return attack;
         return null;
     }
+    static bool MatchesProfile(EnemyAttack attack, AttackProfile.AttackKind kind) => kind switch
+    {
+        AttackProfile.AttackKind.Shooter => attack is EnemyShooterAttack,
+        AttackProfile.AttackKind.Contact => attack is ContactDamageAttack,
+        AttackProfile.AttackKind.SelfDestruct => attack is SelfDestructAttack,
+        _ => false
+    };
     static string GetAttackTypeName(AttackProfile.AttackKind kind) => kind switch
     {
         AttackProfile.AttackKind.Shooter => nameof(EnemyShooterAttack),
-        AttackProfile.AttackKind.Contact => nameof(ContactDamageAttack), _ => kind.ToString()
+        AttackProfile.AttackKind.Contact => nameof(ContactDamageAttack),
+        AttackProfile.AttackKind.SelfDestruct => nameof(SelfDestructAttack),
+        _ => kind.ToString()
     };
     static bool MatchesProfile(EnemyMovement movement, MovementProfile.MovementKind kind) => kind switch
     {
         MovementProfile.MovementKind.Ground => movement.GetType() == typeof(EnemyGroundMovement),
         MovementProfile.MovementKind.JumpingGround => movement is EnemyJumpingGroundMovement,
         MovementProfile.MovementKind.Flying => movement is EnemyFlyingMovement,
+        MovementProfile.MovementKind.Charge => movement is EnemyChargeMovement,
         _ => false
     };
     static string GetMovementTypeName(MovementProfile.MovementKind kind) => kind switch
     {
         MovementProfile.MovementKind.Ground => nameof(EnemyGroundMovement),
         MovementProfile.MovementKind.JumpingGround => nameof(EnemyJumpingGroundMovement),
-        MovementProfile.MovementKind.Flying => nameof(EnemyFlyingMovement), _ => kind.ToString()
+        MovementProfile.MovementKind.Flying => nameof(EnemyFlyingMovement),
+        MovementProfile.MovementKind.Charge => nameof(EnemyChargeMovement), _ => kind.ToString()
     };
     public void ChangeState(EnemyState next) => stateMachine?.ChangeState(next);
     public void Despawn()
